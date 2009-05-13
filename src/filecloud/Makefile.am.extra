@@ -1,0 +1,4 @@
+LDADD += -lQtGui
+LDFLAGS += -L/usr/lib/qt4 #please modify those lines for your platform
+CPPFLAGS += -I/usr/include/qt4
+CPPFLAGS += -I/usr/include/qt4/QtGui
