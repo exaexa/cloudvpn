@@ -18,7 +18,7 @@
 #include "network.h"
 #include "sighandler.h"
 
-address cached_hwaddr (0, (const uint8_t*)"012345", 6);
+address cached_hwaddr (0, (const uint8_t*) "012345", 6);
 
 #ifndef _WIN32_
 
@@ -499,12 +499,12 @@ int iface_destroy()
 
 }
 
-int iface_retrieve_hwaddr(uint8_t*d)
+int iface_retrieve_hwaddr (uint8_t*d)
 {
 
 }
 
-int iface_set_hwaddr(uint8_t*d)
+int iface_set_hwaddr (uint8_t*d)
 {
 
 }
