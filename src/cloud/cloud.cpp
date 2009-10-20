@@ -52,7 +52,7 @@ int main (int argc, char**argv)
 		ret = 1;
 		goto failed_config;
 	}
-	log_init("cloudvpn/cloud");
+	log_init ("cloudvpn/cloud");
 
 	if (!config_get_int ("heartbeat", heartbeat_usec) )
 		heartbeat_usec = 50000;

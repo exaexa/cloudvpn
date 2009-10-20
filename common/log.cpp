@@ -36,26 +36,27 @@ void log_setlevel (int l)
 static const char* loglevel_mark (int level)
 {
 	switch (level) {
-		case LOG_DEBUG:
-			return "debug ";
-		case LOG_INFO:
-			return "(info) ";
-		case LOG_WARN:
-			return "* warning ";
-		case LOG_ERROR:
-			return "*** Error ";
-		case LOG_FATAL:
-			return "FATAL ";
-		default:
-			return "";
+	case LOG_DEBUG:
+		return "debug ";
+	case LOG_INFO:
+		return "(info) ";
+	case LOG_WARN:
+		return "* warning ";
+	case LOG_ERROR:
+		return "*** Error ";
+	case LOG_FATAL:
+		return "FATAL ";
+	default:
+		return "";
 	}
 }
 
 #define DATEFORMAT "%Y-%m-%d %H:%M:%S: "
 
-void log_init (const char*name) {
+void log_init (const char*name)
+{
 	if (config_is_true ("syslog") ) syslog_mode = true;
-	if ( syslog_mode ) openlog(name, LOG_PID|LOG_CONS, LOG_DAEMON);
+	if ( syslog_mode ) openlog (name, LOG_PID | LOG_CONS, LOG_DAEMON);
 }
 
 void Log (int lvl, const char*fmt, ...)
@@ -78,7 +79,7 @@ void Log (int lvl, const char*fmt, ...)
 }
 
 void Log_full (int lvl, const char*file, int line,
-		const char*fmt, ...)
+               const char*fmt, ...)
 {
 	if (lvl > log_level) return;
 	char date_buf[65];
@@ -94,13 +95,14 @@ void Log_full (int lvl, const char*file, int line,
 
 }
 
-void log_print(FILE*output,const char*file, int line, int lvl, const char*fmt, va_list ap){
-char buffer[256];
+void log_print (FILE*output, const char*file, int line, int lvl, const char*fmt, va_list ap)
+{
+	char buffer[256];
 	if ( syslog_mode ) {
-		int len = strlen(loglevel_mark (lvl) );
+		int len = strlen (loglevel_mark (lvl) );
 		strncpy (buffer, loglevel_mark (lvl), len);
-		len += sprintf (buffer+len, "%s@%d: ", file, line);
-		vsnprintf (buffer+len, 256-len, fmt, ap);
+		len += sprintf (buffer + len, "%s@%d: ", file, line);
+		vsnprintf (buffer + len, 256 - len, fmt, ap);
 		syslog (lvl, buffer);
 	} else {
 		fputs (loglevel_mark (lvl), output);
