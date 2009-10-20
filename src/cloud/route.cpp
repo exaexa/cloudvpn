@@ -146,7 +146,6 @@ static inline bool id_already_seen (uint32_t id)
  * (notice that we don't care about network distances)
  */
 
-static map<address, map<int, int> > multiroute;
 
 static int multi_ratio = 2;
 static bool do_multiroute = false;
@@ -165,66 +164,11 @@ static int route_init_multi()
 	return 0;
 }
 
-static void route_update_multi()
-{
-	multiroute.clear();
-
-	map<int, connection>::iterator i, ie;
-	i = comm_connections().begin();
-	ie = comm_connections().end();
-
-	map<address, connection::remote_route>::iterator j, je;
-
-	for (;i != ie;++i) {
-		j = i->second.remote_routes.begin();
-		je = i->second.remote_routes.end();
-		for (;j != je;++j) multiroute[j->first]
-			[i->second.ping+j->second.ping+2] = i->first;
-	}
-}
-
-static bool multiroute_scatter (const address&a, int from, int*result)
-{
-	map<address, map<int, int> >::iterator i;
-	map<int, int>::iterator j, je, ts;
-	int maxping, n, r;
-
-	i = multiroute.find (a);
-	if (i == multiroute.end() ) return false; //not found, drop it.
-	j = i->second.begin();
-
-	je = i->second.end();
-	while (j != je) {
-		ts = j;
-		n = 0;
-		maxping = multi_ratio * j->first;
-
-		for (; (j != je) && (j->first < maxping);++j, ++n);
-
-		if (j == je) r = rand() % n;
-		else r = rand() % (n + 1);  //suppose the rand is enough.
-
-		if (r != n) { //this group of connections won!
-			for (;r > 0;--r, ++ts);
-			if (ts->second == from) continue; //never send back
-			*result = ts->second;
-			return true;
-		}
-	}
-	return false; //no routes. wtf?! We should never get here.
-}
-
-/*
- * route
- */
-
-static map<address, route_info> route, reported_route;
-
 static int route_dirty = 0;
-static int route_report_ping_diff = 5000;
+static int route_report_ping_diff_percent = 20;
 static int route_max_dist = 64;
 static int default_ttl = 128;
-static int hop_penalization = 0;
+static int hop_penalization = 50;
 
 static bool shared_uplink = false;
 
@@ -254,10 +198,9 @@ void route_init()
 
 	int t;
 
-	if (!config_get_int ("report_ping_changes_above", t) ) t = 5000;
-	Log_info ("only ping changes above %gmsec will be reported to peers",
-	          0.001*t);
-	route_report_ping_diff = t;
+	if (!config_get_int ("ping_change_to_report", t) ) t = 20;
+	Log_info ("only ping changes above %d%% will be reported to peers",t);
+	route_report_ping_diff_percent = t;
 
 	if (!config_get_int ("route_max_dist", t) ) t = 64;
 	Log_info ("maximal node distance is %d", t);
@@ -305,7 +248,7 @@ void route_update()
 	map<int, gate>::iterator g;
 	list<address>::iterator k;
 
-	route.clear();
+	//route.clear(); !!
 
 	/*
 	 * Following code just fills the route with stuff from connections
