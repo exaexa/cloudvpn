@@ -21,6 +21,8 @@ void Log (int level, const char*fmt, ...);
 void Log_full (int level, const char*file, int line,
                const char*fmt, ...);
 void log_setlevel (int level);
+void log_print(FILE*output,const char*file, int line, int lvl, const char*fmt, va_list ap);
+void log_init (const char*name);
 
 #define LOG_FATAL 1
 #define LOG_ERROR 2

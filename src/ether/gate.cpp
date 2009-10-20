@@ -1036,6 +1036,7 @@ int main (int argc, char**argv)
 		return 1;
 	}
 
+	log_init("cloudvpn/ether");
 	squeue_init();
 	network_init();
 	gate_init();
