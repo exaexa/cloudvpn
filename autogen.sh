@@ -10,8 +10,7 @@ DISTRIB=`uname -s`
 echo "bin_PROGRAMS = ${PROGS}" >>$OUT
 echo "noinst_LIBRARIES = libcommon.a" >>$OUT
 echo "libcommon_a_SOURCES = $COMMON" >>$OUT
-echo "libcommon_a_CPPFLAGS = -Iinclude/ -I/usr/local/include/ -L/usr/local/lib/" >>$OUT
-echo "libcommon_a_CXXFLAGS = -Iinclude/ -I/usr/local/include/ -L/usr/local/lib/" >>$OUT
+echo "libcommon_a_CPPFLAGS = -Iinclude/" >>$OUT
 if [ ${DISTRIB} = "FreeBSD" ]
 then echo "CXXFLAGS = -I/usr/local/include/ -L/usr/local/lib/" >>$OUT 
 fi
