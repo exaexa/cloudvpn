@@ -15,17 +15,19 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
+#ifndef __WIN32__
 #include <syslog.h>
+#endif
 #include <string.h>
 
 #define output_file stdout
 
 bool syslog_mode = false;
 
-
 /*
  * Log_info is verbose enough by default. Debug not shown.
  */
+
 static int log_level = LOG_INFO;
 
 void log_setlevel (int l)
@@ -55,8 +57,10 @@ static const char* loglevel_mark (int level)
 
 void log_init (const char*name)
 {
+#ifndef __WIN32__
 	if (config_is_true ("syslog") ) syslog_mode = true;
 	if ( syslog_mode ) openlog (name, LOG_PID | LOG_CONS, LOG_DAEMON);
+#endif
 }
 
 void Log (int lvl, const char*fmt, ...)
@@ -97,6 +101,8 @@ void Log_full (int lvl, const char*file, int line,
 
 void log_print (FILE*output, const char*file, int line, int lvl, const char*fmt, va_list ap)
 {
+
+#ifndef __WIN32__
 	char buffer[256];
 	if ( syslog_mode ) {
 		int len = strlen (loglevel_mark (lvl) );
@@ -104,12 +110,14 @@ void log_print (FILE*output, const char*file, int line, int lvl, const char*fmt,
 		len += sprintf (buffer + len, "%s@%d: ", file, line);
 		vsnprintf (buffer + len, 256 - len, fmt, ap);
 		syslog (lvl, buffer);
-	} else {
-		fputs (loglevel_mark (lvl), output);
-		fprintf (output, "%s@%d:\t", file, line);
-		vfprintf (output, fmt, ap);
-		fprintf (output_file, "\n");
-		fflush (output_file);
+		return;
 	}
+#endif
+
+	fputs (loglevel_mark (lvl), output);
+	fprintf (output, "%s@%d:\t", file, line);
+	vfprintf (output, fmt, ap);
+	fprintf (output_file, "\n");
+	fflush (output_file);
 }
 
