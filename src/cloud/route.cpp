@@ -113,63 +113,20 @@ static inline bool id_already_seen (uint32_t id)
 }
 
 /*
- * scattering multipath routing
- *
- * This is viable for many common situations.
- * a] it increases bandwidth between two nodes connected by separate paths
- * b] it can improve network security in the way that attacker has to compromise
- *    more connections to get complete data.
- *
- * However, this can cause harm.
- * a] gaming - usually we want to have the best ping, not the average one.
- *    Also, as multipath can mess up packet order, some badly written games
- *    may show weird behavior.
- * b] high-performance configurations, because additional processing power
- *    is required. (in short, enable this on 'clients', but not on 'servers'.)
- * c] memory required for storing the whole thing can range to
- *    O( max_number_of_routes * max_connections^2 )
- *    which, although unlikely, can fill lots of space pretty fast.
- *
- * Situations where this is definitely _not_ viable:
- * a] server in the center of the star
- * b] long line
- * ...or one could say 'any situation that has no real multipath'
- *
- * Algorithm is:
- *
- * 1 get all connections that can route to given destination, sort them by ping
- * 2 take first N connections, so that their lowest ping is larger than ratio
- *   of highest ping
- * 3 if random number of N+1 == 0, route via random of those, else take next
- *   N connections and continue like in 2.
- *
- * (notice that we don't care about network distances)
+ * route tree
  */
 
 
-static int multi_ratio = 2;
-static bool do_multiroute = false;
+/*
+ * common stuff
+ */
 
-static int route_init_multi()
-{
-	if (config_is_true ("multipath") ) {
-		do_multiroute = true;
-		Log_info ("multipath scattering enabled");
-
-		if (!config_get_int ("multipath_ratio", multi_ratio) )
-			multi_ratio = 2;
-		if (multi_ratio < 2) multi_ratio = 2;
-		Log_info ("multipath scatter ratio is %d", multi_ratio);
-	}
-	return 0;
-}
-
+static int multipath_percentage = 0;
 static int route_dirty = 0;
 static int route_report_ping_diff_percent = 20;
 static int route_max_dist = 64;
 static int default_ttl = 128;
 static int hop_penalization = 50;
-
 static bool shared_uplink = false;
 
 void route_periodic_update()
@@ -214,6 +171,10 @@ void route_init()
 	Log_info ("hop penalization is %d%%", t);
 	hop_penalization = t;
 
+	if (!config_get_int ("multipath", t) ) t = 0;
+	Log_info ("multipath percentage is %d%%", t);
+	hop_penalization = t;
+
 	if (shared_uplink = config_is_true ("shared_uplink") )
 		Log_info ("sharing uplink for broadcasts");
 }
@@ -226,7 +187,7 @@ void route_shutdown()
 
 void route_set_dirty()
 {
-	++route_dirty;
+	route_dirty=1;
 }
 
 inline uint64_t penalized_ping (uint64_t ping, uint64_t dist)
@@ -247,68 +208,6 @@ void route_update()
 	map<int, gate>&gates = gate_gates();
 	map<int, gate>::iterator g;
 	list<address>::iterator k;
-
-	//route.clear(); !!
-
-	/*
-	 * Following code just fills the route with stuff from connections
-	 *
-	 * hints:
-	 * i->first = connection ID
-	 * i->second = connection
-	 * j->first = address
-	 * j->second = ping
-	 *
-	 * Note that ping can't have ping 0 cuz it would get deleted.
-	 *
-	 * Number 2 over there is filtering zero routes out,
-	 * so that local route doesn't get overpwned by some other.
-	 */
-
-	for (g = gates.begin();g != gates.end();++g) {
-		if (g->second.fd < 0) continue;
-		for (k = g->second.local.begin();
-		        k != g->second.local.end();++k) {
-			route_info temp (1, 0, - (1 + g->second.id) );
-			route[*k] = temp;
-		}
-	}
-
-	uint64_t pp = 0, np = 0;
-
-	for (i = cons.begin();i != cons.end();++i) {
-		if (i->second.state != cs_active)
-			continue;
-
-		for ( j = i->second.remote_routes.begin();
-		        j != i->second.remote_routes.end();
-		        ++j ) {
-
-			if (1 + j->second.dist > (unsigned int) route_max_dist)
-				continue;
-
-			if (route.count (j->first) ) {
-
-				pp = penalized_ping (route[j->first].ping,
-				                     route[j->first].dist);
-				np = penalized_ping (j->second.ping + 2,
-				                     j->second.dist + 1);
-
-				if (pp < np) continue;
-				if ( (pp == np ) &&
-				        ( route[j->first].dist <
-				          (1 + j->second.dist) ) ) continue;
-			}
-
-			route_info temp (2 + j->second.ping + i->second.ping,
-			                 1 + j->second.dist,
-			                 i->first);
-			route[j->first] = temp;
-
-		}
-	}
-
-	if (do_multiroute) route_update_multi();
 
 	report_route();
 }

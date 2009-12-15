@@ -43,32 +43,5 @@ void route_packet (
 void route_set_dirty();
 void route_report_to_connection (connection&c);
 
-class route_info
-{
-public:
-	uint32_t ping;
-	uint32_t dist;
-	int id;
-
-	/* about id's:
-	 * if id>=0 then it's a connection ID.
-	 * if id<0 then it's a gate ID of (-(id+1))
-	 */
-
-	inline route_info (int p, int d, int i) {
-		ping = p;
-		id = i;
-		dist = d;
-	}
-
-	inline route_info() {
-		//this shall never be called.
-		ping = -1;
-		dist = -1;
-	}
-};
-
-map<address, route_info>& route_get();
-
 #endif
 
