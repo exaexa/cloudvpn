@@ -15,6 +15,7 @@
 #include "log.h"
 #include "conf.h"
 
+#include "string.h"
 
 /*
  * as the standard library doesnt seem to have a function with determinable
@@ -24,9 +25,9 @@
  * This WILL copy ALL your data, so we need it at least equal to assembler.
  */
 
-void sq_memcpy (uint8_t*dst, const uint8_t*src, size_t size)
+void sq_memmove (register uint8_t*dst, register const uint8_t*src, size_t size)
 {
-	uint8_t*t;
+	register uint8_t*t;
 	if (dst < src) {
 		t = dst + size;
 		while (dst < t) {
@@ -56,7 +57,7 @@ void sq_memcpy (uint8_t*dst, const uint8_t*src, size_t size)
 
 void pusher::push (const uint8_t*p, size_t size)
 {
-	sq_memcpy (d, p, size);
+	memcpy (d, p, size);
 	d += size;
 }
 
@@ -86,7 +87,7 @@ void squeue::realloc (size_t size)
 	if ( !len() ) {  //flush to begin
 		front = back = 0;
 	} else if (front > squeue_max_free_size) { //move closer to start
-		sq_memcpy (d.begin().base(),
+		sq_memmove (d.begin().base(),
 		           d.begin().base() + front,
 		           back - front);
 		back -= front;

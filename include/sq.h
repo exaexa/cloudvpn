@@ -23,8 +23,6 @@ using namespace std;
 
 #include <stdint.h>
 
-void sq_memcpy (uint8_t*dst, const uint8_t*src, size_t size);
-
 class pusher
 {
 public:

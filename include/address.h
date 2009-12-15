@@ -21,6 +21,8 @@ using namespace std;
 
 #include "sq.h"
 
+#include "string.h"
+
 class address
 {
 
@@ -52,12 +54,12 @@ public:
 	inline address (uint32_t i, const uint8_t*data, size_t size) :
 			inst (i),
 			addr (size) {
-		sq_memcpy (addr.begin().base(), data, size);
+		memcpy (addr.begin().base(), data, size);
 	}
 
 	inline void set (uint32_t i, const uint8_t*data, size_t size) {
 		addr.resize (size);
-		sq_memcpy (addr.begin().base(), data, size);
+		memcpy (addr.begin().base(), data, size);
 		inst = i;
 	}
 
