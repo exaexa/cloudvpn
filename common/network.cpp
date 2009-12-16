@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 
-static bool tcp_nodelay = false;
+static bool tcp_nodelay = true;
 static int ip_tos = 0;
 static int listen_backlog_size = 32;
 
@@ -51,8 +51,11 @@ int tcp_socket_writeable (int sock)
 int network_init()
 {
 #ifndef __WIN32__
-	tcp_nodelay = config_is_true ("tcp_nodelay");
-	if (tcp_nodelay) Log_info ("TCP_NODELAY is set for all sockets");
+	tcp_nodelay = true;
+	if (config_is_set ("tcp_nodelay") )
+		tcp_nodelay = config_is_true ("tcp_nodelay");
+	Log_info ("immediate TCP is %sabled", tcp_nodelay ? "en" : "dis");
+
 	string t;
 	if (!config_get ("ip_tos", t) ) goto no_tos;
 	if (t == "lowdelay") ip_tos = IPTOS_LOWDELAY;
