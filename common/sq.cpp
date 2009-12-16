@@ -29,20 +29,28 @@ void sq_memmove (register uint8_t*dst, register const uint8_t*src, size_t size)
 {
 	register uint8_t*t;
 	if (dst < src) {
-		t = dst + size;
-		while (dst < t) {
-			*dst = *src;
-			++dst;
-			++src;
+		if (dst + size < src)
+			memcpy (dst, src, size);
+		else {
+			t = dst + size;
+			while (dst < t) {
+				*dst = *src;
+				++dst;
+				++src;
+			}
 		}
 	} else {
-		t = dst;
-		dst += size;
-		src += size;
-		while (dst > t) {
-			--dst;
-			--src;
-			*dst = *src;
+		if (src + size < dst)
+			memcpy (dst, src, size);
+		else {
+			t = dst;
+			dst += size;
+			src += size;
+			while (dst > t) {
+				--dst;
+				--src;
+				*dst = *src;
+			}
 		}
 	}
 }
@@ -88,8 +96,8 @@ void squeue::realloc (size_t size)
 		front = back = 0;
 	} else if (front > squeue_max_free_size) { //move closer to start
 		sq_memmove (d.begin().base(),
-		           d.begin().base() + front,
-		           back - front);
+		            d.begin().base() + front,
+		            back - front);
 		back -= front;
 		front = 0;
 	}
