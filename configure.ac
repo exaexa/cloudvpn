@@ -1,5 +1,5 @@
 
-AC_INIT(cloudvpn, 2)
+AC_INIT(cloudvpn, 1.99.9)
 AC_PREREQ(2.5)
 AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE()

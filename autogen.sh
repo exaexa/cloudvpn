@@ -3,7 +3,7 @@
 # simple autogen script that generates basic layout for autotools.
 # not meant to be included in distribution.
 
-COMMON_CPPFLAGS="-Icommon/ -I/usr/local/include"
+COMMON_CPPFLAGS="-I\$(srcdir)/common/ -I/usr/local/include"
 COMMON_LDFLAGS="-L/usr/local/libs"
 
 OUT=Makefile.am
@@ -27,7 +27,7 @@ for i in $PROGS ; do
 	echo "${i}dir = src/$i/" >>$OUT
 	echo "${i}_SOURCES = `echo src/$i/*.cpp`" >>$OUT
 	echo "noinst_HEADERS += `echo src/$i/*.h |grep -v '*'`" >>$OUT
-	echo "${i}_CPPFLAGS = -Isrc/$i/ ${COMMON_CPPFLAGS}" >>$OUT
+	echo "${i}_CPPFLAGS = -I\$(srcdir)/src/$i/ ${COMMON_CPPFLAGS}" >>$OUT
 	echo "${i}_LDADD = libcommon.a" >>$OUT
 	echo "${i}_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT #empty for future use.
 	[ -f src/$i/Makefile.am.extra ] &&
@@ -40,7 +40,7 @@ for i in $CONNECTORS ; do
 	echo "lib${i}_ladir = connectors/${i}" >>$OUT
 	echo "lib${i}_la_SOURCES = `echo connectors/$i/*.cpp`" >>$OUT
 	echo "noinst_HEADERS += `echo src/$i/*.h |grep -v '*'`" >>$OUT
-	echo "lib${i}_la_CPPFLAGS = -Isrc/$i/ ${COMMON_CPPFLAGS}" >>$OUT
+	echo "lib${i}_la_CPPFLAGS = -I\$(SRCDIR)/src/$i/ ${COMMON_CPPFLAGS}" >>$OUT
 	echo "lib${i}_la_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT #empty for future use.
 	[ -f src/$i/Makefile.am.extra ] &&
 		while read l ; do
