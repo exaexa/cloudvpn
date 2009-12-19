@@ -16,7 +16,7 @@ CONNECTORS=`echo *`
 cd ..
 
 echo "bin_PROGRAMS = ${PROGS}" >>$OUT
-echo "lib_LTLIBRARIES = `for i in ${CONNECTORS}; do echo -n \"lib$i.la \" ; done`" >>$OUT
+echo "pkglib_LTLIBRARIES = `for i in ${CONNECTORS}; do echo -n \"lib$i.la \" ; done`" >>$OUT
 echo "noinst_LIBRARIES = libcommon.a" >>$OUT
 echo "libcommon_a_SOURCES = `echo common/*.cpp`" >>$OUT
 echo "noinst_HEADERS = `echo common/*.h`" >>$OUT
