@@ -41,7 +41,6 @@ for i in $CONNECTORS ; do
 	echo "lib${i}_la_SOURCES = `echo connectors/$i/*.cpp`" >>$OUT
 	echo "noinst_HEADERS += `echo src/$i/*.h |grep -v '*'`" >>$OUT
 	echo "lib${i}_la_CPPFLAGS = -Isrc/$i/ ${COMMON_CPPFLAGS}" >>$OUT
-	echo "lib${i}_la_LIBADD = libcommon.a" >>$OUT
 	echo "lib${i}_la_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT #empty for future use.
 	[ -f src/$i/Makefile.am.extra ] &&
 		while read l ; do
