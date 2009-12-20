@@ -110,7 +110,7 @@ int iface_create()
 	    (ioctl (tun, TUNSETIFF, &ifr) < 0) ||
 	    (ioctl (tun, TUNSETPERSIST,
 	            config_is_true ("iface_persist") ? 1 : 0) < 0) ) {
-		Log_error ("cannot configure tap device");
+		Log_error ("cannot configure tap device. you probably need net-admin capability");
 		close (tun);
 		tun = -1;
 		return 2;
