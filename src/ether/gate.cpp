@@ -116,7 +116,7 @@ int iface_create()
 	if (ioctl (tun, TUNSETPERSIST,
 	           config_is_true ("iface_persist") ? 1 : 0) < 0) {
 
-		Log_warn ("cannot set persistent state on tun device")
+		Log_warn ("cannot set persistent state on tun device");
 	}
 
 	strncpy (iface_name, ifr.ifr_name, IFNAMSIZ); //store for later use
