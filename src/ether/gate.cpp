@@ -106,14 +106,17 @@ int iface_create()
 		Log_info ("using interface name `%s'", d.c_str() );
 	} else Log_info ("using default interface name");
 
-	if (
-	    (ioctl (tun, TUNSETIFF, &ifr) < 0) ||
-	    (ioctl (tun, TUNSETPERSIST,
-	            config_is_true ("iface_persist") ? 1 : 0) < 0) ) {
+	if (ioctl (tun, TUNSETIFF, &ifr) < 0) {
 		Log_error ("cannot configure tap device. you probably need net-admin capability");
 		close (tun);
 		tun = -1;
 		return 2;
+	}
+
+	if (ioctl (tun, TUNSETPERSIST,
+	           config_is_true ("iface_persist") ? 1 : 0) < 0) {
+
+		Log_warn ("cannot set persistent state on tun device")
 	}
 
 	strncpy (iface_name, ifr.ifr_name, IFNAMSIZ); //store for later use
