@@ -2,41 +2,75 @@
 #ifndef _CVPN_CONNECTION_H
 #define _CVPN_CONNECTION_H
 
+struct conn_backend_t;
+
 struct conn_backend_interface_t {
-	//loaded function pointers
+
 	/*
+	 * internals, use those sporadically
+	 */
 
-	void conn_start_listening(const char*local);
-	void conn_stop_listening();
+	int (*init) (struct conn_backend_t*);
+	int (*finish) (struct conn_backend_t*);
 
-	void conn_connect(const char*remote);
-	void conn_disconnect();
-	int conn_status();
+	int (*connect) (struct conn_backend_t*, const char*);
+	int (*listen) (struct conn_backend_t*, const char*);
 
-	int conn_push_data(char*buffer,size_t size);
-	int conn_recv_data(char*buffer,size_t size);
+	/*
+	 * interface to use
+	 */
 
-	void conn_cb_new_connection();
-	void conn_cb_conn_ready();
+	int (*accept) (struct conn_backend_t*, struct conn_backend_t**);
+	int (*close) (struct conn_backend_t*);
 
-	*/
+	int (*get_status) (struct conn_backend_t*);
+	int (*get_peer_description) (struct conn_backend_t*, char*, size_t);
+
+	int (*can_send_size) (struct conn_backend_t*, size_t);
+	int (*send_packet) (struct conn_backend_t*, const char*, size_t, int);
+	int (*recv_packet) (struct conn_backend_t*, const char*, size_t);
 };
 
 struct conn_backend_t {
 	struct conn_backend_interface_t*handler;
 	void *privdata;
+
+	void *callback_arg;
+	void (*callback_func) (int, void*);
 };
 
-void conn_backend_load();
-void conn_backend_free();
+/*
+ * global initialization/denitialization
+ */
 
-void conn_init(conn_backend_t*);
+void conn_init();
+void conn_finish();
 
+/*
+ * those 2 functions are used to initially create a communication backend
+ *
+ * (accept() alternative is elsewhere)
+ */
 
-void conn_cb_poll_add_read(int);
-void conn_cb_poll_remove_read(int);
-void conn_cb_poll_add_write(int);
-void conn_cb_poll_remove_write(int);
+conn_backend_t* conn_connect (const char*);
+conn_backend_t* conn_listen (const char*);
+void conn_free (conn_backend_t*);
+
+/*
+ * those functions are exported to the plugin's space, so it can
+ * process polling events
+ */
+
+void conn_cb_poll_add_read (int);
+void conn_cb_poll_remove_read (int);
+void conn_cb_poll_add_write (int);
+void conn_cb_poll_remove_write (int);
+
+/*
+ * interfacing macros/functions
+ *
+ * TODO
+ */
 
 #endif
 
