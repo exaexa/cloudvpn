@@ -454,16 +454,14 @@ void iface_poll_read()
 	char buffer[4096];
 	int ret;
 
-	while (1) {
-		ret = iface_read (buffer, 4096);
+	ret = iface_read (buffer, 4096);
 
-		if (ret <= 0) return;
-		if (ret <= 2 + (2*6) ) {
-			Log_debug ("discarding packet too short for Ethernet");
-			continue;
-		}
-		send_packet ( (uint8_t*) buffer, ret);
+	if (ret <= 0) return;
+	if (ret <= 2 + (2*6) ) {
+		Log_debug ("discarding packet too short for Ethernet");
+		return;
 	}
+	send_packet ( (uint8_t*) buffer, ret);
 }
 
 #else // _WIN32_
