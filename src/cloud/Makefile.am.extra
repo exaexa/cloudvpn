@@ -1,1 +1,0 @@
-LDADD += -lgnutls -lgcrypt -lev
