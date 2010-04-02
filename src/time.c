@@ -11,7 +11,7 @@
  */
 
 #define __TIMESTAMP_CPP__
-#include "timestamp.h"
+#include "time.h"
 
 #include <sys/time.h>
 
