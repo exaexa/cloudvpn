@@ -10,17 +10,12 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_PLUGIN_H
-#define _CVPN_PLUGIN_H
+#ifndef _CVPN_TRANSPORT_H
+#define _CVPN_TRANSPORT_H
 
 /*
- * plugin is a dynamically loaded library that every part is made of.
- * This can be router, packet filter, packet queueing framework, traffic
- * endpoints, tunnels or interfaces, etc.
+ * transport moves the packets among parts
  */
-
-struct plugin {
-};
 
 #endif
 

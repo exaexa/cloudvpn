@@ -10,17 +10,26 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_PLUGIN_H
-#define _CVPN_PLUGIN_H
+#define __TIMESTAMP_CPP__
+#include "timestamp.h"
+
+#include <sys/time.h>
+
 
 /*
- * plugin is a dynamically loaded library that every part is made of.
- * This can be router, packet filter, packet queueing framework, traffic
- * endpoints, tunnels or interfaces, etc.
+ * Read the system time and store it to globally available variable.
+ *
+ * Don't forget to call it before first timestamp() call.
  */
 
-struct plugin {
-};
+void timestamp_update()
+{
+	struct timeval tv;
 
-#endif
+	gettimeofday (&tv, 0);
+
+	timestamp_lasttime =
+	    (1000000 * (uint64_t) tv.tv_sec)
+	    + (uint64_t) tv.tv_usec;
+}
 

@@ -10,17 +10,26 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_PLUGIN_H
-#define _CVPN_PLUGIN_H
+#ifndef _CVPN_CHAIN_H
+#define _CVPN_CHAIN_H
+
+#include <stdint.h>
+
+#include "plugin.h"
 
 /*
- * plugin is a dynamically loaded library that every part is made of.
- * This can be router, packet filter, packet queueing framework, traffic
- * endpoints, tunnels or interfaces, etc.
+ * part is an instance of plugin
  */
 
-struct plugin {
+struct part {
+	uint32_t id;
+	struct plugin*p;
+	void*data;
+	char*id;
 };
 
-#endif
+/*
+ * pool is a set of parts
+ */
 
+#endif
