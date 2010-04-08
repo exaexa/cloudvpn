@@ -23,7 +23,7 @@ echo "cloudvpndir = src/" >>$OUT
 echo "cloudvpn_SOURCES = `echo src/*.c`" >>$OUT
 echo "cloudvpn_CPPFLAGS = ${COMMON_CPPFLAGS}" >>$OUT
 echo "cloudvpn_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT #empty for future use.
-[ -f src//Makefile.am.extra ] &&
+[ -f src/Makefile.am.extra ] &&
 	while read l ; do
 		[ "$l" ] && echo "cloudvpn_${l}" >>$OUT
 	done < src/Makefile.am.extra
