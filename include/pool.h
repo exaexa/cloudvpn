@@ -25,11 +25,17 @@ struct part {
 	uint32_t id;
 	struct plugin*p;
 	void*data;
-	char*id;
+	char name[9]; /* canonical name for human usage */
 };
 
 /*
  * pool is a set of parts
  */
+
+struct part* cloudvpn_part_by_id (int);
+struct part* cloudvpn_part_by_name (char*);
+
+int cloudvpn_part_new (struct plugin*);
+int cloudvpn_part_destroy (int);
 
 #endif

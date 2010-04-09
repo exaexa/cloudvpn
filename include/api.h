@@ -32,16 +32,16 @@
  * place to store functions exported to the plugin
  */
 
-int (*cloudvpn_get_version)() = 0;
+int (*cloudvpn_get_version) () = 0;
 /* ... more to come */
 
 /*
  * loading function. Performs a simple API version check.
  */
 
-int cloudvpn_plugin_load(int version, void**functions)
+int cloudvpn_plugin_load (int version, void**functions)
 {
-	if(functions[0] != (void*)CLOUDVPN_API_VERSION) return 1;
+	if (functions[0] != (void*) CLOUDVPN_API_VERSION) return 1;
 	cloudvpn_get_version = functions[0];
 	return 0;
 }
@@ -52,7 +52,7 @@ int cloudvpn_plugin_load(int version, void**functions)
  * headers of functions exported to the plugin
  */
 
-extern int (*cloudvpn_get_version)(); 
+extern int (*cloudvpn_get_version) ();
 /* ... more to come */
 
 /*
@@ -63,7 +63,7 @@ extern int (*cloudvpn_get_version)();
  * get_plugin_info returns a pointer to statically available plugin structure
  * describing n-th contained plugin, or zero on error.
  */
-struct plugin* cloudvpn_plugin_get(int);
+struct plugin* cloudvpn_plugin_get (int);
 
 #else
 

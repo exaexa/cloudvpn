@@ -20,5 +20,7 @@
  * plugin to do so.
  */
 
+int boot (int argc, char**argv);
+
 #endif
 

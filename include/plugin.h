@@ -19,7 +19,16 @@
  * endpoints, tunnels or interfaces, etc.
  */
 
+#include "packet.h"
+#include "pool.h"
+
 struct plugin {
+	char name[9]; /* zero terminated string */
+	int instances; /* number of instances of the script */
+
+	void (*process_packet) (struct part*, struct packet*);
+	void (*init) (struct part*);
+	void (*fini) (struct part*);
 };
 
 #endif

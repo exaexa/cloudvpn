@@ -29,7 +29,7 @@
  * -mark is a voluntarily filled-in integer that everyone can fiddle with
  */
 
-struct cvpn_packet {
+struct packet {
 	char*data;
 	uint16_t len; //total length of datagram data
 	uint16_t soff;

@@ -17,5 +17,7 @@
  * Shutdown is here for graceful exits, and is good for that.
  */
 
+int cloudvpn_shutdown(int); /* if parameter, cloudvpn respawns itself */
+
 #endif
 
