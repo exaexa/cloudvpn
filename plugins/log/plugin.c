@@ -10,14 +10,11 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_SHUTDOWN_H
-#define _CVPN_SHUTDOWN_H
+#define __CVPN_PLUGIN_MAIN
+#include "api.h"
 
-/*
- * Shutdown is here for graceful exits, and is good for that.
- */
+struct plugin* cloudvpn_plugin_get (int id) {
+	return 0;
+}
 
-int cloudvpn_shutdown (int); /* if parameter, cloudvpn respawns itself */
-
-#endif
 
