@@ -4,6 +4,7 @@
 # not meant to be included in distribution.
 
 COMMON_CPPFLAGS="-I\$(srcdir)/include/ -I/usr/local/include"
+COMMON_CFLAGS="-Wall -Werror"
 COMMON_LDFLAGS="-L/usr/local/libs"
 
 OUT=Makefile.am
@@ -22,6 +23,7 @@ echo "noinst_HEADERS = `echo include/*.h`" >>$OUT
 echo "cloudvpndir = src/" >>$OUT
 echo "cloudvpn_SOURCES = `echo src/*.c`" >>$OUT
 echo "cloudvpn_CPPFLAGS = ${COMMON_CPPFLAGS}" >>$OUT
+echo "cloudvpn_CFLAGS = ${COMMON_CFLAGS}" >>$OUT
 echo "cloudvpn_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT #empty for future use.
 [ -f src/Makefile.am.extra ] &&
 	while read l ; do
@@ -33,6 +35,7 @@ for i in $PLUGINS ; do
 	echo "lib${i}_la_SOURCES = `echo plugins/$i/*.c`" >>$OUT
 	echo "noinst_HEADERS += `echo src/$i/*.h |grep -v '*'`" >>$OUT
 	echo "lib${i}_la_CPPFLAGS = -I\$(SRCDIR)/src/$i/ ${COMMON_CPPFLAGS}" >>$OUT
+	echo "lib${i}_la_CFLAGS = ${COMMON_CFLAGS}" >>$OUT
 	echo "lib${i}_la_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT #empty for future use.
 	[ -f src/$i/Makefile.am.extra ] &&
 		while read l ; do

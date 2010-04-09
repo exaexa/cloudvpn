@@ -14,11 +14,12 @@
 #define _CVPN_API_H
 
 /*
- * This is meant as a bridge between core part and plugins. Plugin includes this
- * file at exactly once with defined __CVPN_PLUGIN_MAIN, which gives it a nice
+ * API is meant as a bridge between core part and plugins. Plugin includes this
+ * file exactly once with defined __CVPN_PLUGIN_MAIN, which gives it a nice
  * global namespace of all functions that it could need. There are also
- * declarations of functions that must be exported by the script, when included
- * with __CVPN_PLUGIN defined. Otherwise it justs specifies the API functions.
+ * declarations of functions that must be exported by the script, and those
+ * that are exported to the script, when included with __CVPN_PLUGIN defined.
+ * Otherwise it justs declares the API functions.
  */
 
 #include "plugin.h"
@@ -38,10 +39,10 @@ int (*cloudvpn_get_version)() = 0;
  * loading function. Performs a simple API version check.
  */
 
-int cloudvpn_plugin_load(void**functions)
+int cloudvpn_plugin_load(int version, void**functions)
 {
-	if(functions[0] != CLOUDVPN_API_VERSION) return 1;
-	cloudvpn_get_version = functions[1];
+	if(functions[0] != (void*)CLOUDVPN_API_VERSION) return 1;
+	cloudvpn_get_version = functions[0];
 	return 0;
 }
 
@@ -63,7 +64,6 @@ extern int (*cloudvpn_get_version)();
  * describing n-th contained plugin, or zero on error.
  */
 struct plugin* cloudvpn_plugin_get(int);
-
 
 #else
 
