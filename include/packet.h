@@ -38,5 +38,11 @@ struct packet {
 	uint32_t in_part, out_part, next_part, mark;
 };
 
+struct packet* cloudvpn_packet_alloc();
+void cloudvpn_packet_free(struct packet*);
+
+int cloudvpn_alloc_data(struct packet*);
+
+
 #endif
 

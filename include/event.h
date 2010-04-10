@@ -17,5 +17,22 @@
  * generic event/poll/timer registration/callbacking interface
  */
 
+enum cloudvpn_event_type {
+	ev_fd_read,
+	ev_fd_write,
+	ev_fd_error,
+	ev_timer,
+	ev_periodic,
+	ev_signal,
+	ev_immediate_work
+};
+
+typedef void (*cloudvpn_event_cb) (enum cloudvpn_event_type, int, void*);
+
+int cloudvpn_register_event (enum cloudvpn_event_type, int, cloudvpn_event_cb);
+int cloudvpn_unregister_event (enum cloudvpn_event_type, int);
+
+int cloudvpn_wait_for_event();
+
 #endif
 

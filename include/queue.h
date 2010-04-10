@@ -10,12 +10,16 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_TRANSPORT_H
-#define _CVPN_TRANSPORT_H
+#ifndef _CVPN_QUEUE_H
+#define _CVPN_QUEUE_H
 
 /*
- * transport moves the packets among parts
+ * queue is here as an intermediate place for packets that travel among parts.
  */
+
+int cloudvpn_queue_push(struct packet*);
+struct packet* cloudvpn_queue_pop();
+int cloudvpn_queue_size();
 
 #endif
 
