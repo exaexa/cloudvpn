@@ -32,7 +32,7 @@ typedef void (*cloudvpn_event_cb) (enum cloudvpn_event_type, int, void*);
 int cloudvpn_register_event (enum cloudvpn_event_type, int, cloudvpn_event_cb);
 int cloudvpn_unregister_event (enum cloudvpn_event_type, int);
 
-int cloudvpn_wait_for_event();
+void cloudvpn_wait_for_event();
 
 #endif
 

@@ -10,9 +10,6 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_BOOT_H
-#define _CVPN_BOOT_H
-
 /*
  * to boot, we read the config and then startup everything.
  *
@@ -22,5 +19,4 @@
 
 int boot (int argc, char**argv);
 
-#endif
 

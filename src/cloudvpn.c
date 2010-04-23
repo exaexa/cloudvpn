@@ -10,8 +10,24 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "boot.h"
+#include "core.h"
+#include "event.h"
+
+#include <stdio.h>
+
+static int exit = 0;
+
+void cloudvpn_exit() {
+	exit = 1;
+}
+
 int main (int argc, char**argv)
 {
+	if(core_init()) return 1;
+	if(boot(argc,argv)) return 2;
+	while(!exit) cloudvpn_wait_for_event();
+	if(!core_finish()) return 3;
 
 	return 0;
 }
