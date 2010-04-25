@@ -39,9 +39,9 @@ struct packet {
 };
 
 struct packet* cloudvpn_packet_alloc();
-void cloudvpn_packet_free(struct packet*);
+void cloudvpn_packet_free (struct packet*);
 
-int cloudvpn_alloc_data(struct packet*);
+int cloudvpn_alloc_data (struct packet*);
 
 
 #endif

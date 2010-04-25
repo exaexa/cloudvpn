@@ -18,13 +18,12 @@
  */
 
 enum cloudvpn_event_type {
-	ev_fd_read,
-	ev_fd_write,
-	ev_fd_error,
-	ev_timer,
-	ev_periodic,
-	ev_signal,
-	ev_immediate_work
+	event_fd_read,
+	event_fd_write,
+	event_fd_error,
+	event_timer,
+	event_periodic,
+	event_signal
 };
 
 typedef void (*cloudvpn_event_cb) (enum cloudvpn_event_type, int, void*);
@@ -33,6 +32,9 @@ int cloudvpn_register_event (enum cloudvpn_event_type, int, cloudvpn_event_cb);
 int cloudvpn_unregister_event (enum cloudvpn_event_type, int);
 
 void cloudvpn_wait_for_event();
+
+int cloudvpn_event_init();
+int cloudvpn_event_finish();
 
 #endif
 

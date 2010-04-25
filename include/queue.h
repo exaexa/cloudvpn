@@ -17,7 +17,7 @@
  * queue is here as an intermediate place for packets that travel among parts.
  */
 
-int cloudvpn_queue_push(struct packet*);
+int cloudvpn_queue_push (struct packet*);
 struct packet* cloudvpn_queue_pop();
 int cloudvpn_queue_size();
 
