@@ -17,6 +17,6 @@
  * plugin to do so.
  */
 
-int boot (int argc, char**argv);
+int cloudvpn_boot (int argc, char**argv);
 
 

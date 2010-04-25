@@ -10,18 +10,9 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event.h"
+#include "boot.h"
 
-#include <ev.h>
-
-int cloudvpn_event_init() {
+int cloudvpn_boot(int argc, char**argv) {
 	return 0;
-}
-
-int cloudvpn_event_finish(){
-	return 0;
-}
-
-void cloudvpn_wait_for_event(){
 }
 
