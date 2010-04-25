@@ -31,12 +31,9 @@ extern
 #endif
 	uint64_t timestamp_lasttime;
 
-inline uint64_t timestamp()
-{
-	return timestamp_lasttime;
-}
+inline uint64_t cloudvpn_timestamp();
 
-void timestamp_update();
+void cloudvpn_timestamp_update();
 
 
 #endif

@@ -22,7 +22,7 @@
  * Don't forget to call it before first timestamp() call.
  */
 
-void timestamp_update()
+void cloudvpn_timestamp_update()
 {
 	struct timeval tv;
 
@@ -31,5 +31,11 @@ void timestamp_update()
 	timestamp_lasttime =
 	    (1000000 * (uint64_t) tv.tv_sec)
 	    + (uint64_t) tv.tv_usec;
+}
+
+uint64_t cloudvpn_timestamp()
+{
+	return timestamp_lasttime;
+
 }
 

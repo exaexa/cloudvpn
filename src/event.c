@@ -12,6 +12,7 @@
 
 #include "event.h"
 
+#define _XOPEN_SOURCE
 #include <ev.h>
 
 int cloudvpn_event_init() {
