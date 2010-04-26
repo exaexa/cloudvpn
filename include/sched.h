@@ -10,16 +10,16 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_QUEUE_H
-#define _CVPN_QUEUE_H
+#ifndef _CVPN_SCHED_H
+#define _CVPN_SCHED_H
 
 /*
- * queue is here as an intermediate place for packets that travel among parts.
+ * scheduler is an intermediate place for tasks that travel among parts.
+ * It can also handle multicore tasks, etc.
  */
 
-int cloudvpn_queue_push (struct packet*);
-struct packet* cloudvpn_queue_pop();
-int cloudvpn_queue_size();
+void cloudvpn_scheduler_exit();
+int cloudvpn_scheduler_run();
 
 #endif
 
