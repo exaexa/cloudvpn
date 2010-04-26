@@ -17,19 +17,26 @@
  * generic event/poll/timer registration/callbacking interface
  */
 
-enum cloudvpn_event_type {
-	event_fd_read,
-	event_fd_write,
-	event_fd_error,
-	event_timer,
+#include "timestamp.h"
+
+enum {
+	event_fd_readable,
+	event_fd_writeable,
+	event_time,
 	event_periodic,
 	event_signal
 };
 
-typedef void (*cloudvpn_event_cb) (enum cloudvpn_event_type, int, void*);
+struct event {
+	int type; /* r/o */
+	uint64_t param; /* r/o */
+	struct part* owner; /* r/w */
+	void* data; /* r/w */
+	int work_priority; /* r/w */
+};
 
-int cloudvpn_register_event (enum cloudvpn_event_type, int, cloudvpn_event_cb);
-int cloudvpn_unregister_event (enum cloudvpn_event_type, int);
+struct event* cloudvpn_register_new_event (int /*type*/, uint64_t /*param*/);
+void cloudvpn_unregister_event (struct event*);
 
 void cloudvpn_wait_for_event();
 

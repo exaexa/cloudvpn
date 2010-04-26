@@ -21,15 +21,19 @@
 
 #include "packet.h"
 #include "pool.h"
+#include "sched.h"
 
 struct plugin {
 	char name[9]; /* zero terminated string */
 	int instances; /* number of instances of the script */
 
-	void (*process_packet) (struct part*, struct packet*);
+	void (*process_work) (struct part*, struct work*);
 	void (*init) (struct part*);
 	void (*fini) (struct part*);
 };
+
+void cloudvpn_load_plugin(const char*fn, const char*name);
+void cloudvpn_close_plugin(const char*name);
 
 #endif
 

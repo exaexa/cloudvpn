@@ -21,5 +21,35 @@
 void cloudvpn_scheduler_exit();
 int cloudvpn_scheduler_run();
 
+/* work priority
+ *
+ * 0 = critical, above everything (like for signals or whatever. probably not used)
+ * 1 = common stuff
+ * 2 = idle (polling etc.)
+ */
+
+struct work* cloudvpn_new_work(int prio);
+
+enum {
+	work_nothing=0,
+	work_packet,
+	work_event,
+	work_poll,
+	work_exit
+};
+
+#include "packet.h"
+
+struct work {
+	int type;
+	union {
+		struct packet* p;
+		struct {
+			void* event_data;
+			int fd;
+		};
+	};
+};
+
 #endif
 

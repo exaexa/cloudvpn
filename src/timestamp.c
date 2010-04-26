@@ -10,8 +10,8 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define __TIMESTAMP_CPP__
-#include "time.h"
+#define __TIMESTAMP_C__
+#include "timestamp.h"
 
 #include <sys/time.h>
 

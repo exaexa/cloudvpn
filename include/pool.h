@@ -19,6 +19,7 @@
 
 /*
  * part is an instance of plugin
+ * pool is a set of parts
  */
 
 struct part {
@@ -28,14 +29,10 @@ struct part {
 	char name[9]; /* canonical name for human usage */
 };
 
-/*
- * pool is a set of parts
- */
-
 struct part* cloudvpn_part_by_id (int);
 struct part* cloudvpn_part_by_name (char*);
 
-int cloudvpn_part_new (struct plugin*);
-int cloudvpn_part_destroy (int);
+int cloudvpn_part_init (struct plugin*);
+int cloudvpn_part_close (int);
 
 #endif

@@ -26,7 +26,7 @@
  * 28th of May year 60425 after Christ's birth. Then it might turn into a fixme.
  */
 
-#ifndef __TIMESTAMP_CPP__
+#ifndef __TIMESTAMP_C__
 extern
 #endif
 	uint64_t timestamp_lasttime;
