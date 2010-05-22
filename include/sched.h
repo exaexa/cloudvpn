@@ -18,8 +18,10 @@
  * It can also handle multicore tasks, etc.
  */
 
-void cloudvpn_scheduler_exit();
+int cloudvpn_scheduler_init();
+
 int cloudvpn_scheduler_run();
+void cloudvpn_scheduler_stop();
 
 /* work priority
  *
@@ -28,10 +30,11 @@ int cloudvpn_scheduler_run();
  * 2 = idle (polling etc.)
  */
 
-struct work* cloudvpn_new_work(int prio);
+struct work* cloudvpn_new_work();
+int cloudvpn_schedule_work (struct work*);
 
 enum {
-	work_nothing=0,
+	work_nothing = 0,
 	work_packet,
 	work_event,
 	work_poll,
@@ -39,12 +42,15 @@ enum {
 };
 
 #include "packet.h"
+#include "pool.h"
 
 struct work {
 	int type;
+	int priority;
 	union {
 		struct packet* p;
 		struct {
+			uint32_t owner;
 			void* event_data;
 			int fd;
 		};

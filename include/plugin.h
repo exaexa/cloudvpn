@@ -32,8 +32,8 @@ struct plugin {
 	void (*fini) (struct part*);
 };
 
-void cloudvpn_load_plugin(const char*fn, const char*name);
-void cloudvpn_close_plugin(const char*name);
+void cloudvpn_load_plugin (const char*fn, const char*name);
+void cloudvpn_close_plugin (const char*name);
 
 #endif
 

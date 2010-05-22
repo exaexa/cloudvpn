@@ -12,7 +12,8 @@
 
 #include "boot.h"
 
-int cloudvpn_boot(int argc, char**argv) {
+int cloudvpn_boot (int argc, char**argv)
+{
 	return 0;
 }
 

@@ -15,14 +15,21 @@
 #define _XOPEN_SOURCE
 #include <ev.h>
 
-int cloudvpn_event_init() {
+int cloudvpn_event_init()
+{
 	return 0;
 }
 
-int cloudvpn_event_finish(){
+int cloudvpn_event_finish()
+{
 	return 0;
 }
 
-void cloudvpn_wait_for_event(){
+void cloudvpn_wait_for_event()
+{
+	/*
+	 * note that event can be safely waited for only in one thread.
+	 * If there is already another thread waiting, we just idle till event.
+	 */
 }
 

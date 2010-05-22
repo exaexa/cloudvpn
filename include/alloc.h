@@ -10,19 +10,20 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core.h"
+#ifndef _CVPN_ALLOC_H
+#define _CVPN_ALLOC_H
 
-#include "event.h"
+/*
+ * Simple wrapper around the memory allocating functions. If you want to
+ * replace them, do it here.
+ */
 
-int cloudvpn_core_init()
-{
-	if (cloudvpn_event_init() ) return 1;
-	return 0;
-}
+#include <stdlib.h>
 
-int cloudvpn_core_finish()
-{
-	if (cloudvpn_event_finish() ) return 1;
-	return 0;
-}
+#define cl_malloc malloc
+#define cl_calloc calloc
+#define cl_free free
+#define cl_realloc realloc
+
+#endif
 

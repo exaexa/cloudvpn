@@ -28,15 +28,19 @@ enum {
 };
 
 struct event {
-	int type; /* r/o */
-	uint64_t param; /* r/o */
-	struct part* owner; /* r/w */
-	void* data; /* r/w */
-	int work_priority; /* r/w */
+	int type;
+	int priority;
+	union {
+		int fd;
+		uint64_t time;
+		int signal;
+	};
+	uint32_t owner;
+	void* data;
 };
 
-struct event* cloudvpn_register_new_event (int /*type*/, uint64_t /*param*/);
-void cloudvpn_unregister_event (struct event*);
+struct event* cloudvpn_new_event ();
+void cloudvpn_register_event (struct event*);
 
 void cloudvpn_wait_for_event();
 

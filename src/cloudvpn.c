@@ -20,7 +20,7 @@ int main (int argc, char**argv)
 {
 	if (cloudvpn_core_init() ) return 1;
 	if (cloudvpn_boot (argc, argv) ) return 2;
-	if (cloudvpn_scheduler_run()) return 3;
+	if (cloudvpn_scheduler_run() ) return 3;
 	if (cloudvpn_core_finish() ) return 4;
 
 	return 0;
