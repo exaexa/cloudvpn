@@ -25,7 +25,7 @@ echo "cloudvpn_SOURCES = `echo src/*.c`" >>$OUT
 echo "cloudvpn_CPPFLAGS = ${COMMON_CPPFLAGS}" >>$OUT
 echo "cloudvpn_CFLAGS = ${COMMON_CFLAGS}" >>$OUT
 echo "cloudvpn_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT
-echo "cloudvpn_LDADD = -lev " >>$OUT
+echo "cloudvpn_LDADD = -lev -lpthread " >>$OUT
 [ -f src/Makefile.am.extra ] &&
 	while read l ; do
 		[ "$l" ] && echo "cloudvpn_${l}" >>$OUT
