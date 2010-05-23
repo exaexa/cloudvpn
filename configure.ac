@@ -1,6 +1,6 @@
 
 AC_PREREQ(2.6)
-AC_INIT([cloudvpn], [20100401])
+AC_INIT([cloudvpn], [9999])
 AC_CONFIG_AUX_DIR(.) # because of libtoolize
 
 AM_INIT_AUTOMAKE()
