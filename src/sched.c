@@ -11,9 +11,8 @@
  */
 
 #include "sched.h"
+#include "event.h"
 #include "alloc.h"
-
-static int keep_running;
 
 /*
  * simple list that contains tasks that need to be done.
@@ -41,6 +40,8 @@ int cloudvpn_schedule_work (struct work*w) /* insert work into the queue */
 	if (!nw) return 1;
 	nw->w = w;
 
+	/* TODO mutex */
+
 	q = &queue;
 
 	while ( (*q) && ( (*q)->w->priority >= w->priority) ) {
@@ -48,37 +49,68 @@ int cloudvpn_schedule_work (struct work*w) /* insert work into the queue */
 		*q = nw;
 	}
 
+	/* TODO release mutex */
+
 	return 0;
 }
 
 int cloudvpn_scheduler_init()
 {
 	queue = 0;
-	keep_running = 1;
-
 	return 0;
 }
 
 void cloudvpn_scheduler_destroy()
 {
-	/* TODO dealloc all that was left in queue */
+	struct work_queue*p;
+
+	while(queue) {
+		p=queue;
+		queue=queue->next;
+		cl_free(p->w);
+		cl_free(p);
+	}
 }
 
-void cloudvpn_scheduler_stop()
+static void do_work(struct work* w)
 {
-	keep_running = 0;
+	switch(w->type) {
+	case work_packet:
+		break;
+	case work_event:
+		break;
+	case work_poll:
+		break;
+	case work_exit:
+		break;
+	}
 }
 
-static void do_work(){
-	/* TODO
-	 * retrieve work (with mutex) and do it
-	 */
-}
-
-int cloudvpn_scheduler_run()
+int cloudvpn_scheduler_run(int* keep_running)
 {
-	while (keep_running)
-		do_work();
+	struct work_queue*p;
+	struct work*w;
+	while (*keep_running) {
+
+		/* TODO: mutex on queue access goes here */
+
+		if(!queue) {
+			/* TODO end of mutex */
+			cloudvpn_wait_for_event();
+		} else {
+			p=queue;
+			queue=queue->next;
+
+			/* TODO end of mutex */
+
+			w=p->w;
+			cl_free(p);
+
+			do_work(w);
+
+			cl_free(w);
+		}
+	}
 
 	return 0;
 }

@@ -15,6 +15,8 @@
 
 #include <stdint.h>
 
+struct part;
+
 #include "plugin.h"
 
 /*

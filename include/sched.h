@@ -20,8 +20,7 @@
 
 int cloudvpn_scheduler_init();
 
-int cloudvpn_scheduler_run();
-void cloudvpn_scheduler_stop();
+int cloudvpn_scheduler_run(int*);
 
 /* work priority
  *
@@ -34,11 +33,10 @@ struct work* cloudvpn_new_work();
 int cloudvpn_schedule_work (struct work*);
 
 enum {
-	work_nothing = 0,
-	work_packet,
-	work_event,
-	work_poll,
-	work_exit
+	work_packet, /* part processes a packet */
+	work_event, /* part is woken up by an event */
+	work_poll, /* wait for events */
+	work_exit /* part is removed */
 };
 
 #include "packet.h"

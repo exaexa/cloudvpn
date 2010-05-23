@@ -18,5 +18,6 @@
  */
 
 int cloudvpn_boot (int argc, char**argv);
+int cloudvpn_run ();
 
 

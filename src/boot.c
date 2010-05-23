@@ -17,3 +17,8 @@ int cloudvpn_boot (int argc, char**argv)
 	return 0;
 }
 
+int cloudvpn_run ()
+{
+	return 0;
+}
+
