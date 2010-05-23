@@ -13,15 +13,18 @@
 #include "core.h"
 
 #include "event.h"
+#include "sched.h"
 
 int cloudvpn_core_init()
 {
 	if (cloudvpn_event_init() ) return 1;
+	if (cloudvpn_scheduler_init() ) return 2;
 	return 0;
 }
 
 int cloudvpn_core_finish()
 {
+	if (cloudvpn_scheduler_destroy() ) return 2;
 	if (cloudvpn_event_finish() ) return 1;
 	return 0;
 }

@@ -62,7 +62,7 @@ int cloudvpn_scheduler_init()
 	return cl_mutex_init(&queue_mutex);
 }
 
-void cloudvpn_scheduler_destroy()
+int cloudvpn_scheduler_destroy()
 {
 	struct work_queue*p;
 
@@ -73,7 +73,7 @@ void cloudvpn_scheduler_destroy()
 		cl_free(p);
 	}
 
-	cl_mutex_destroy(queue_mutex);
+	return cl_mutex_destroy(queue_mutex);
 }
 
 static void do_work(struct work* w)
