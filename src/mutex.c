@@ -49,3 +49,32 @@ int cl_mutex_unlock (cl_mutex m)
 	return pthread_mutex_unlock ( (pthread_mutex_t*) m);
 }
 
+
+int cl_cond_init (cl_cond* cp)
+{
+	*cp = cl_malloc (sizeof (pthread_cond_t) );
+	if (! (*cp) ) return 1;
+	return pthread_cond_init ( (pthread_cond_t*) *cp, 0);
+}
+
+int cl_cond_destroy (cl_cond c)
+{
+	int r = pthread_cond_destroy ( (pthread_cond_t*) c);
+	cl_free (c);
+	return r;
+}
+
+int cl_cond_wait (cl_cond c, cl_mutex m)
+{
+	return pthread_cond_wait ( (pthread_cond_t*) c, (pthread_mutex_t*) m);
+}
+
+int cl_cond_signal (cl_cond c)
+{
+	return pthread_cond_signal ( (pthread_cond_t*) c);
+}
+
+int cl_cond_broadcast (cl_cond c)
+{
+	return pthread_cond_broadcast ( (pthread_cond_t*) c);
+}
