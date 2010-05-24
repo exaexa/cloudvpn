@@ -35,7 +35,6 @@ static void async_callback (EV_P_ ev_async*w, int revents) {}
 static void notify_event_loop()
 {
 	/* asynchronously interrupt sleep so libev can update itself */
-	ev_async_init (&async, async_callback);
 	ev_async_send (loop, &async);
 }
 
@@ -52,6 +51,9 @@ void cloudvpn_unregister_event (struct event*e)
 int cloudvpn_event_init()
 {
 	loop = ev_default_loop (0);
+
+	ev_async_init (&async, async_callback);
+	ev_async_start (loop, &async);
 
 	return loop || cl_mutex_init (&event_mutex);
 }
