@@ -37,7 +37,7 @@ enum {
 	work_packet, /* part processes a packet */
 	work_event, /* part is woken up by an event */
 	work_poll, /* wait for events */
-	work_exit /* part is removed */
+	work_exit /* remove a part */
 };
 
 #include "packet.h"

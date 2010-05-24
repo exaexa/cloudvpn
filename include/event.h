@@ -23,7 +23,6 @@ enum {
 	event_fd_readable,
 	event_fd_writeable,
 	event_time,
-	event_periodic,
 	event_signal
 };
 
@@ -40,7 +39,10 @@ struct event {
 };
 
 struct event* cloudvpn_new_event ();
+void cloudvpn_delete_event (struct event*);
+
 void cloudvpn_register_event (struct event*);
+void cloudvpn_unregister_event (struct event*);
 
 void cloudvpn_wait_for_event();
 
