@@ -47,14 +47,12 @@ static cl_mutex event_mutex;
 
 int cloudvpn_event_init()
 {
-	cl_mutex_init (&event_mutex);
-	return 0;
+	return cl_mutex_init (&event_mutex);
 }
 
 int cloudvpn_event_finish()
 {
-	cl_mutex_destroy (&event_mutex);
-	return 0;
+	return cl_mutex_destroy (event_mutex);
 }
 
 void cloudvpn_wait_for_event()
