@@ -54,7 +54,15 @@ int cloudvpn_schedule_work (struct work*w)
 	}
 
 	cl_mutex_unlock (queue_mutex);
-	cl_cond_broadcast (queue_just_filled);
+
+	/*
+	 * Now wake up some thread that processes the event. Note that waking
+	 * multiple threads (by broadcast) is not really neccessary, as one
+	 * scheduled work can be done only by one thread, and this function is
+	 * called for every thread.
+	 */
+
+	cl_cond_signal (queue_just_filled);
 
 	return 0;
 }

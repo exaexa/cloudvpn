@@ -10,24 +10,25 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "packet.h"
 #include "alloc.h"
 
 struct packet* cloudvpn_packet_alloc() {
 	return cl_calloc (1, sizeof (struct packet) ); /* note the zeroes! */
 }
 
-void cloudvpn_packet_free (struct packet*)
+void cloudvpn_packet_free (struct packet* p)
 {
-	if (packet->data) cl_free (packet->data);
-	cl_free (packet);
+	if (p->data) cl_free (p->data);
+	cl_free (p);
 }
 
-int cloudvpn_alloc_data (struct packet*)
+int cloudvpn_alloc_data (struct packet* p)
 {
-	char*t = cl_realloc (packet->data, packet->len);
+	char*t = cl_realloc (p->data, p->len);
 
 	if (t) {
-		packet->data = t;
+		p->data = t;
 		return 0;
 	} else
 		return 1;

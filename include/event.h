@@ -17,7 +17,7 @@
  * generic event/poll/timer registration/callbacking interface
  */
 
-#include "timestamp.h"
+#include <stdint.h>
 
 enum {
 	event_fd_readable,
