@@ -21,7 +21,7 @@
 int cloudvpn_scheduler_init();
 int cloudvpn_scheduler_destroy();
 
-int cloudvpn_scheduler_run(int*);
+int cloudvpn_scheduler_run (int*);
 
 /* work priority
  *

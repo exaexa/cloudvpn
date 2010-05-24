@@ -42,7 +42,7 @@ int cloudvpn_schedule_work (struct work*w) /* insert work into the queue */
 	if (!nw) return 1;
 	nw->w = w;
 
-	cl_mutex_lock(queue_mutex);
+	cl_mutex_lock (queue_mutex);
 
 	q = &queue;
 
@@ -51,7 +51,7 @@ int cloudvpn_schedule_work (struct work*w) /* insert work into the queue */
 		*q = nw;
 	}
 
-	cl_mutex_unlock(queue_mutex);
+	cl_mutex_unlock (queue_mutex);
 
 	return 0;
 }
@@ -59,26 +59,26 @@ int cloudvpn_schedule_work (struct work*w) /* insert work into the queue */
 int cloudvpn_scheduler_init()
 {
 	queue = 0;
-	return cl_mutex_init(&queue_mutex);
+	return cl_mutex_init (&queue_mutex);
 }
 
 int cloudvpn_scheduler_destroy()
 {
 	struct work_queue*p;
 
-	while(queue) {
-		p=queue;
-		queue=queue->next;
-		cl_free(p->w);
-		cl_free(p);
+	while (queue) {
+		p = queue;
+		queue = queue->next;
+		cl_free (p->w);
+		cl_free (p);
 	}
 
-	return cl_mutex_destroy(queue_mutex);
+	return cl_mutex_destroy (queue_mutex);
 }
 
-static void do_work(struct work* w)
+static void do_work (struct work* w)
 {
-	switch(w->type) {
+	switch (w->type) {
 	case work_packet:
 		break;
 	case work_event:
@@ -90,30 +90,30 @@ static void do_work(struct work* w)
 	}
 }
 
-int cloudvpn_scheduler_run(int* keep_running)
+int cloudvpn_scheduler_run (int* keep_running)
 {
 	struct work_queue*p;
 	struct work*w;
 	while (*keep_running) {
 
-		cl_mutex_lock(queue_mutex);
+		cl_mutex_lock (queue_mutex);
 
-		if(!queue) {
+		if (!queue) {
 
-			cl_mutex_unlock(queue_mutex);
+			cl_mutex_unlock (queue_mutex);
 			cloudvpn_wait_for_event();
 
 		} else {
 
-			p=queue;
-			queue=queue->next;
+			p = queue;
+			queue = queue->next;
 
-			cl_mutex_unlock(queue_mutex);
+			cl_mutex_unlock (queue_mutex);
 
-			w=p->w;
-			cl_free(p);
-			do_work(w);
-			cl_free(w);
+			w = p->w;
+			cl_free (p);
+			do_work (w);
+			cl_free (w);
 		}
 	}
 

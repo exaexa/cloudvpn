@@ -20,11 +20,11 @@
 
 typedef void* cl_mutex;
 
-int cl_mutex_init(cl_mutex*);
-int cl_mutex_destroy(cl_mutex);
-int cl_mutex_lock(cl_mutex);
-int cl_mutex_trylock(cl_mutex);
-int cl_mutex_unlock(cl_mutex);
+int cl_mutex_init (cl_mutex*);
+int cl_mutex_destroy (cl_mutex);
+int cl_mutex_lock (cl_mutex);
+int cl_mutex_trylock (cl_mutex);
+int cl_mutex_unlock (cl_mutex);
 
 #endif
 
