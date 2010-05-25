@@ -41,8 +41,8 @@ struct event {
 struct event* cloudvpn_new_event ();
 void cloudvpn_delete_event (struct event*);
 
-void cloudvpn_register_event (struct event*);
-void cloudvpn_unregister_event (struct event*);
+int cloudvpn_register_event (struct event*);
+int cloudvpn_unregister_event (struct event*);
 
 void cloudvpn_wait_for_event();
 
