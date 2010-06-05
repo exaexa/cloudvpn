@@ -10,9 +10,7 @@ COMMON_LDFLAGS="-L/usr/local/libs"
 OUT=Makefile.am
 touch NEWS AUTHORS ChangeLog
 echo > $OUT
-cd src
-PROGS=`echo *`
-cd ../plugins
+cd plugins
 PLUGINS=`echo *`
 cd ..
 
