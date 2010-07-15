@@ -38,7 +38,7 @@ typedef enum {add, remove} eventlist_op;
 struct eventlist {
 	struct event*e;
 	struct eventlist*next;
-	eventlist_op op; /* otherwise remove */
+	eventlist_op op;
 };
 
 static struct eventlist* event_change_queue;
@@ -46,6 +46,7 @@ static cl_mutex ecq_mutex;
 
 static int push_event_change (eventlist_op op, struct event*e)
 {
+	/* insert event to registration queue */
 	struct eventlist*ne;
 
 	ne = cl_malloc (sizeof (struct eventlist) );
@@ -76,7 +77,6 @@ int cloudvpn_unregister_event (struct event*e)
 {
 	return push_event_change (remove, e);
 }
-
 
 /*
  * event core functions
@@ -117,7 +117,7 @@ void cloudvpn_wait_for_event()
 	/* don't block if there's already other thread waiting */
 	if (cl_mutex_trylock (eventcore_mutex) ) return;
 
-	/* load stuff from frontend (tear off and convert list to queue) */
+	/* load stuff from frontend, put it to ev, wait for it. */
 
 	/*TODO*/
 

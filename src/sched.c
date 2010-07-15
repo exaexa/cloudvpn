@@ -30,8 +30,11 @@ static struct work_queue *queue;
 static cl_mutex queue_mutex;
 static cl_cond queue_just_filled;
 
+/* static work for event waiting that gets never deleted */
+static struct work event_poll_work;
+
 struct work* cloudvpn_new_work() {
-	return cl_malloc (sizeof (struct work) ); /* no-brainer */
+	return cl_malloc (sizeof (struct work) );
 }
 
 int cloudvpn_schedule_work (struct work*w)
@@ -48,10 +51,11 @@ int cloudvpn_schedule_work (struct work*w)
 
 	q = &queue;
 
-	while ( (*q) && ( (*q)->w->priority >= w->priority) ) {
-		nw->next = *q;
-		*q = nw;
-	}
+	while ( (*q) && ( (*q)->w->priority <= w->priority) )
+		q = & ( (*q)->next);
+
+	nw->next = *q;
+	*q = nw;
 
 	cl_mutex_unlock (queue_mutex);
 
@@ -59,7 +63,7 @@ int cloudvpn_schedule_work (struct work*w)
 	 * Now wake up some thread that processes the event. Note that waking
 	 * multiple threads (by broadcast) is not really neccessary, as one
 	 * scheduled work can be done only by one thread, and this function is
-	 * called for every thread.
+	 * called for every scheduled work, waking as many threads as needed.
 	 */
 
 	cl_cond_signal (queue_just_filled);
@@ -70,6 +74,11 @@ int cloudvpn_schedule_work (struct work*w)
 int cloudvpn_scheduler_init()
 {
 	queue = 0;
+
+	event_poll_work.type = work_poll;
+	event_poll_work.priority = LOWEST_PRIORITY;
+	event_poll_work.is_static = 1;
+
 	return cl_mutex_init (&queue_mutex) ||
 	       cl_cond_init (&queue_just_filled);
 }
@@ -89,15 +98,28 @@ int cloudvpn_scheduler_destroy()
 	       cl_cond_destroy (queue_just_filled);
 }
 
+void cloudvpn_schedule_event_poll()
+{
+	/* This should be explicitely get called once at the beginning. Event
+	 * waiting then reschedules it. */
+
+	cloudvpn_schedule_work (&event_poll_work);
+}
+
 static void do_work (struct work* w)
 {
 	switch (w->type) {
 	case work_packet:
 		break;
+
 	case work_event:
 		break;
+
 	case work_poll:
+		cloudvpn_wait_for_event();
+		cloudvpn_schedule_event_poll();
 		break;
+
 	case work_exit:
 		break;
 	}
@@ -107,6 +129,7 @@ int cloudvpn_scheduler_run (int* keep_running)
 {
 	struct work_queue*p;
 	struct work*w;
+
 	while (*keep_running) {
 
 		cl_mutex_lock (queue_mutex);
@@ -125,8 +148,11 @@ int cloudvpn_scheduler_run (int* keep_running)
 
 			w = p->w;
 			cl_free (p);
+
 			do_work (w);
-			cl_free (w);
+
+			/* don't delete statically assigned work */
+			if (! (w->is_static) ) cl_free (w);
 		}
 	}
 

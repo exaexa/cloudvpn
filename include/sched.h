@@ -23,15 +23,10 @@ int cloudvpn_scheduler_destroy();
 
 int cloudvpn_scheduler_run (int*);
 
-/* work priority
- *
- * 0 = critical, above everything (like for signals or whatever. probably not used)
- * 1 = common stuff
- * 2 = idle (polling etc.)
- */
-
 struct work* cloudvpn_new_work();
 int cloudvpn_schedule_work (struct work*);
+
+void cloudvpn_schedule_event_poll();
 
 enum {
 	work_packet, /* part processes a packet */
@@ -43,12 +38,16 @@ enum {
 #include "packet.h"
 #include "pool.h"
 
+#define LOWEST_PRIORITY 255
+
 struct work {
 	int type;
-	int priority;
+	uint8_t priority; /* lower number gets processed faster */
+	short is_static; /* struct work is owned and freed by someone else */
+
 	union {
-		struct packet* p;
-		struct {
+		struct packet* p; /* packet to process */
+		struct { /* event that happened */
 			uint32_t owner;
 			void* event_data;
 			int fd;

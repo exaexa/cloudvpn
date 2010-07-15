@@ -5,7 +5,7 @@
 
 COMMON_CPPFLAGS="-I\$(srcdir)/include/ -I/usr/local/include"
 COMMON_CFLAGS="-Wall"
-COMMON_LDFLAGS="-L/usr/local/libs"
+COMMON_LDFLAGS="-L/usr/local/lib"
 
 OUT=Makefile.am
 touch NEWS AUTHORS ChangeLog
@@ -32,8 +32,8 @@ echo "cloudvpn_LDADD = -lev -lpthread " >>$OUT
 for i in $PLUGINS ; do
 	echo "lib${i}_ladir = plugins/${i}" >>$OUT
 	echo "lib${i}_la_SOURCES = `echo plugins/$i/*.c`" >>$OUT
-	echo "noinst_HEADERS += `echo src/$i/*.h |grep -v '*'`" >>$OUT
-	echo "lib${i}_la_CPPFLAGS = -I\$(SRCDIR)/src/$i/ ${COMMON_CPPFLAGS}" >>$OUT
+	echo "noinst_HEADERS += `echo plugins/$i/*.h |grep -v '*'`" >>$OUT
+	echo "lib${i}_la_CPPFLAGS = -I\$(SRCDIR)/plugins/$i/ ${COMMON_CPPFLAGS}" >>$OUT
 	echo "lib${i}_la_CFLAGS = ${COMMON_CFLAGS}" >>$OUT
 	echo "lib${i}_la_LDFLAGS = ${COMMON_LDFLAGS}" >>$OUT
 	echo "lib${i}_la_LIBADD = " >>$OUT
