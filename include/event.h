@@ -22,8 +22,9 @@
 enum {
 	event_fd_readable,
 	event_fd_writeable,
-	event_time,
-	event_signal
+	event_time, /* used to wait for some time */
+	event_async, /* synchronization of asynchronous events */
+	event_signal /* system signal received */
 };
 
 struct event {
