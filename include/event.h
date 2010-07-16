@@ -27,26 +27,30 @@ enum {
 	event_signal /* system signal received */
 };
 
-struct event {
+struct event_data {
 	int type;
-	uint8_t priority;
-	short is_static;
 	union {
 		int fd;
 		uint64_t time;
 		int signal;
 	};
 	uint32_t owner;
-	void* data;
-
-	void* _priv;
+	void* priv;
 };
 
+struct event {
+	uint8_t priority;
+	short is_static;
+	struct event_data data;
+};
+
+/* please note that struct event DOESN'T work if not allocated by this */
 struct event* cloudvpn_new_event ();
 void cloudvpn_delete_event (struct event*);
 
 int cloudvpn_register_event (struct event*);
 int cloudvpn_unregister_event (struct event*);
+int cloudvpn_event_send_async (struct event*);
 
 void cloudvpn_wait_for_event();
 

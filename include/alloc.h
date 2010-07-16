@@ -19,11 +19,13 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 #define cl_malloc malloc
 #define cl_calloc calloc
 #define cl_free free
 #define cl_realloc realloc
+#define cl_memcpy memcpy
 
 #endif
 

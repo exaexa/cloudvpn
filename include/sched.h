@@ -37,6 +37,7 @@ enum {
 
 #include "packet.h"
 #include "pool.h"
+#include "event.h"
 
 #define LOWEST_PRIORITY 255
 
@@ -47,11 +48,7 @@ struct work {
 
 	union {
 		struct packet* p; /* packet to process */
-		struct { /* event that happened */
-			uint32_t owner;
-			void* event_data;
-			int fd;
-		};
+		struct event_data e;
 	};
 };
 

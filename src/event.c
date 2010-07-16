@@ -13,6 +13,7 @@
 #include "event.h"
 #include "alloc.h"
 #include "mutex.h"
+#include "sched.h"
 
 #define _XOPEN_SOURCE
 #include <ev.h>
@@ -20,12 +21,33 @@
 static void reload_event_loop();
 
 /*
+ * because we need something internal in event struct, we will create it with
+ * a little tail that is not in struct event.
+ *
+ * This adds abstraction (and plugins don't need to include ev.h too).
+ *
+ * Well, it's an ugly trick.
+ */
+
+#define internal(e) ((struct event_internal_data*)(e+1))
+
+struct event_internal_data {
+	union {
+		ev_io w_io;
+		ev_signal w_signal;
+		ev_timer w_timer;
+		/* async events are handled internally by cloudvpn */
+	};
+};
+
+/*
  * frontend just pushes events to the list that is processed by event core
  * whenever it has time for it.
  */
 
 struct event* cloudvpn_new_event() {
-	return cl_malloc (sizeof (struct event) );
+	return cl_malloc (sizeof (struct event)
+	                  + sizeof (struct event_internal_data) );
 }
 
 void cloudvpn_delete_event (struct event*e)
@@ -33,7 +55,7 @@ void cloudvpn_delete_event (struct event*e)
 	cl_free (e);
 }
 
-typedef enum {add, remove} eventlist_op;
+typedef enum {add, remove, send_async} eventlist_op;
 
 struct eventlist {
 	struct event*e;
@@ -78,6 +100,11 @@ int cloudvpn_unregister_event (struct event*e)
 	return push_event_change (remove, e);
 }
 
+int cloudvpn_event_send_async (struct event*e)
+{
+	return push_event_change (send_async, e);
+}
+
 /*
  * event core functions
  */
@@ -86,7 +113,7 @@ static cl_mutex eventcore_mutex;
 static struct ev_loop* loop;
 static ev_async async;
 
-static void async_callback (EV_P_ ev_async*w, int revents) {}
+static void null_async_callback (EV_P_ ev_async*w, int revents) {}
 
 static void reload_event_loop()
 {
@@ -98,7 +125,7 @@ int cloudvpn_event_init()
 {
 	loop = ev_default_loop (0);
 
-	ev_async_init (&async, async_callback);
+	ev_async_init (&async, null_async_callback);
 	ev_async_start (loop, &async);
 
 	return loop
@@ -113,34 +140,19 @@ int cloudvpn_event_finish()
 }
 
 /*
- * this gets called after event result is scheduled.
- */
-
-static void cleanup_event (struct event*e)
-{
-	if (!e->is_static) {
-
-		/* we can delete the event manually, because we are callbacked
-		 * by code that is mutexed correctly, also dodging OOM
-		 * problems. */
-
-		remove_handler (e);
-		cloudvpn_delete_event (e);
-	}
-}
-
-/*
  * several callbacks for various types of libev watchers
  *
  * I would totally do a template lol.
  */
+
+static int schedule_event (struct event*e);
 
 static void libev_io_cb (struct ev_loop *loop, ev_io *w, int revents)
 {
 	struct event*e;
 	e = w->data;
 
-	cleanup_event (e);
+	schedule_event (e);
 }
 
 static void libev_timer_cb (struct ev_loop *loop, ev_timer *w, int revents)
@@ -148,7 +160,7 @@ static void libev_timer_cb (struct ev_loop *loop, ev_timer *w, int revents)
 	struct event*e;
 	e = w->data;
 
-	cleanup_event (e);
+	schedule_event (e);
 }
 
 static void libev_signal_cb (struct ev_loop *loop, ev_signal *w, int revents)
@@ -156,31 +168,84 @@ static void libev_signal_cb (struct ev_loop *loop, ev_signal *w, int revents)
 	struct event*e;
 	e = w->data;
 
-	cleanup_event (e);
-}
-
-static void libev_async_cb (struct ev_loop *loop, ev_async *w, int revents)
-{
-	struct event*e;
-	e = w->data;
-
-	cleanup_event (e);
+	schedule_event (e);
 }
 
 /*
- * two functions that add/remove events to real libev loop
+ * two functions that add/remove events to real libev loop. Called safely when
+ * loop is guaranteed not to be running
  */
 
-static int add_handler (struct event*e)
+static void add_handler (struct event*e)
 {
+	struct event_internal_data*i;
+	i = internal (e);
 
-	return 0;
+	switch (e->data.type) {
+	case event_time:
+		break;
+	case event_signal:
+		break;
+	case event_fd_writeable:
+		break;
+	case event_fd_readable:
+		break;
+	}
 }
 
-static int remove_handler (struct event*e)
+static void remove_handler (struct event*e)
 {
+	struct event_internal_data*i;
+	i = internal (e);
 
-	return 0;
+	switch (e->data.type) {
+	case event_time:
+		break;
+	case event_signal:
+		break;
+	case event_fd_writeable:
+		break;
+	case event_fd_readable:
+		break;
+	}
+}
+
+/*
+ * event processing stuff
+ */
+
+static void cleanup_event (struct event*e)
+{
+	/*
+	 * always remove the handler, so it doesn't trigger again in next
+	 * thread (faster than event level-trigger is handled)
+	 */
+
+	remove_handler (e);
+
+	if (!e->is_static) {
+
+		cloudvpn_delete_event (e);
+	}
+}
+
+static int schedule_event (struct event*e)
+{
+	struct work*w;
+
+	w = cloudvpn_new_work();
+
+	if (!w) return 1;
+
+	w->type = work_event;
+	w->priority = e->priority;
+	w->is_static = 0;
+
+	memcpy (&w->e, &e->data, sizeof (struct event_data) );
+
+	cleanup_event (e);
+
+	return cloudvpn_schedule_work (w);
 }
 
 /*
@@ -206,6 +271,9 @@ void cloudvpn_wait_for_event()
 			break;
 		case remove:
 			remove_handler (q->e);
+			break;
+		case send_async:
+			schedule_event (q->e);
 			break;
 		}
 		q = q->next;
