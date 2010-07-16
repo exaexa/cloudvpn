@@ -29,7 +29,8 @@ enum {
 
 struct event {
 	int type;
-	int priority;
+	uint8_t priority;
+	short is_static;
 	union {
 		int fd;
 		uint64_t time;
@@ -37,6 +38,8 @@ struct event {
 	};
 	uint32_t owner;
 	void* data;
+
+	void* _priv;
 };
 
 struct event* cloudvpn_new_event ();

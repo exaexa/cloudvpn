@@ -112,6 +112,81 @@ int cloudvpn_event_finish()
 	       || cl_mutex_destroy (ecq_mutex);
 }
 
+/*
+ * this gets called after event result is scheduled.
+ */
+
+static void cleanup_event (struct event*e)
+{
+	if (!e->is_static) {
+
+		/* we can delete the event manually, because we are callbacked
+		 * by code that is mutexed correctly, also dodging OOM
+		 * problems. */
+
+		remove_handler (e);
+		cloudvpn_delete_event (e);
+	}
+}
+
+/*
+ * several callbacks for various types of libev watchers
+ *
+ * I would totally do a template lol.
+ */
+
+static void libev_io_cb (struct ev_loop *loop, ev_io *w, int revents)
+{
+	struct event*e;
+	e = w->data;
+
+	cleanup_event (e);
+}
+
+static void libev_timer_cb (struct ev_loop *loop, ev_timer *w, int revents)
+{
+	struct event*e;
+	e = w->data;
+
+	cleanup_event (e);
+}
+
+static void libev_signal_cb (struct ev_loop *loop, ev_signal *w, int revents)
+{
+	struct event*e;
+	e = w->data;
+
+	cleanup_event (e);
+}
+
+static void libev_async_cb (struct ev_loop *loop, ev_async *w, int revents)
+{
+	struct event*e;
+	e = w->data;
+
+	cleanup_event (e);
+}
+
+/*
+ * two functions that add/remove events to real libev loop
+ */
+
+static int add_handler (struct event*e)
+{
+
+	return 0;
+}
+
+static int remove_handler (struct event*e)
+{
+
+	return 0;
+}
+
+/*
+ * event waiting frontend
+ */
+
 void cloudvpn_wait_for_event()
 {
 	/* don't block if there's already other thread waiting */
@@ -119,7 +194,26 @@ void cloudvpn_wait_for_event()
 
 	/* load stuff from frontend, put it to ev, wait for it. */
 
-	/*TODO*/
+	cl_mutex_lock (ecq_mutex);
+
+	/* i'm so lazy */
+#	define q event_change_queue
+
+	while (q) {
+		switch (q->op) {
+		case add:
+			add_handler (q->e);
+			break;
+		case remove:
+			remove_handler (q->e);
+			break;
+		}
+		q = q->next;
+	}
+
+#	undef q
+
+	cl_mutex_unlock (ecq_mutex);
 
 	ev_loop (loop, EVLOOP_ONESHOT);
 
