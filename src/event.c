@@ -22,11 +22,11 @@ static void reload_event_loop();
 
 /*
  * because we need something internal in event struct, we will create it with
- * a little tail that is not in struct event.
+ * a little tail that is not in declaration in header file.
  *
  * This adds abstraction (and plugins don't need to include ev.h too).
  *
- * Well, it's an ugly trick.
+ * Well, and it's an ugly trick.
  */
 
 #define internal(e) ((struct event_internal_data*)(e+1))
@@ -182,13 +182,39 @@ static void add_handler (struct event*e)
 	i = internal (e);
 
 	switch (e->data.type) {
+
 	case event_time:
+		/*
+		 * somehow, this produces strict aliasing warning:
+		 *
+		 * ev_timer_init (& (i->w_timer), libev_timer_cb,
+		 *                0.000001f*e->data.time, 0);
+		 *
+		 * so i have replaced it.
+		 */
+
+		ev_init (& (i->w_timer), libev_timer_cb);
+
+		i->w_timer.at = 0.000001f * e->data.time;
+		i->w_timer.repeat = 0;
+
+		ev_timer_start (loop, & (i->w_timer) );
 		break;
+
 	case event_signal:
+		ev_signal_init (& (i->w_signal), libev_signal_cb,
+		                e->data.signal);
+		ev_signal_start (loop, & (i->w_signal) );
 		break;
+
 	case event_fd_writeable:
+		ev_io_init (& (i->w_io), libev_io_cb, e->data.fd, EV_WRITE);
+		ev_io_start (loop, & (i->w_io) );
 		break;
+
 	case event_fd_readable:
+		ev_io_init (& (i->w_io), libev_io_cb, e->data.fd, EV_READ);
+		ev_io_start (loop, & (i->w_io) );
 		break;
 	}
 }
@@ -200,12 +226,16 @@ static void remove_handler (struct event*e)
 
 	switch (e->data.type) {
 	case event_time:
+		ev_timer_stop (loop, & (i->w_timer) );
 		break;
+
 	case event_signal:
+		ev_signal_stop (loop, & (i->w_signal) );
 		break;
+
 	case event_fd_writeable:
-		break;
 	case event_fd_readable:
+		ev_io_stop (loop, & (i->w_io) );
 		break;
 	}
 }
@@ -254,12 +284,16 @@ static int schedule_event (struct event*e)
 
 void cloudvpn_wait_for_event()
 {
+	int created_async_work;
+
 	/* don't block if there's already other thread waiting */
 	if (cl_mutex_trylock (eventcore_mutex) ) return;
 
 	/* load stuff from frontend, put it to ev, wait for it. */
 
 	cl_mutex_lock (ecq_mutex);
+
+	created_async_work = 0;
 
 	/* i'm so lazy */
 #	define q event_change_queue
@@ -274,6 +308,7 @@ void cloudvpn_wait_for_event()
 			break;
 		case send_async:
 			schedule_event (q->e);
+			++created_async_work;
 			break;
 		}
 		q = q->next;
@@ -283,7 +318,9 @@ void cloudvpn_wait_for_event()
 
 	cl_mutex_unlock (ecq_mutex);
 
-	ev_loop (loop, EVLOOP_ONESHOT);
+	/* don't wait if it seems that we have other work to do. */
+	if (!created_async_work)
+		ev_loop (loop, EVLOOP_ONESHOT);
 
 	cl_mutex_unlock (eventcore_mutex);
 }

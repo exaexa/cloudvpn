@@ -31,7 +31,7 @@ struct event_data {
 	int type;
 	union {
 		int fd;
-		uint64_t time;
+		uint64_t time; /* in microseconds */
 		int signal;
 	};
 	uint32_t owner;
