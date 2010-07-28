@@ -29,12 +29,16 @@ struct part {
 	struct plugin*p;
 	void*data;
 	char name[9]; /* canonical name for human usage */
+
+	/* TODO
+	 * invent some mechanism that ensures that parts are deleted safely.
+	 * refcounting?
+	 */
 };
 
-struct part* cloudvpn_part_by_id (int);
 struct part* cloudvpn_part_by_name (char*);
 
-int cloudvpn_part_init (struct plugin*);
-int cloudvpn_part_close (int);
+struct part* cloudvpn_part_init (struct plugin*);
+int cloudvpn_part_close (struct part*);
 
 #endif

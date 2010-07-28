@@ -34,7 +34,7 @@ struct event_data {
 		uint64_t time; /* in microseconds */
 		int signal;
 	};
-	uint32_t owner;
+	struct part* owner;
 	void* priv;
 };
 

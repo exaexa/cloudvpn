@@ -24,8 +24,6 @@
  * -packet source address part (offset soff)
  * -packet payload (offset doff)
  *
- * -in_part is the part where the packet came from
- * -next_part is where the packet is supposed to go next
  * -mark is a voluntarily filled-in integer that everyone can fiddle with
  */
 
@@ -35,7 +33,9 @@ struct packet {
 	uint16_t soff;
 	uint16_t doff;
 
-	uint32_t in_part, out_part, next_part, mark;
+	uint32_t mark;
+
+	struct part *src_part, *route_part, *dst_part;
 };
 
 struct packet* cloudvpn_packet_alloc();

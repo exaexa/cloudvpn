@@ -184,20 +184,8 @@ static void add_handler (struct event*e)
 	switch (e->data.type) {
 
 	case event_time:
-		/*
-		 * somehow, this produces strict aliasing warning:
-		 *
-		 * ev_timer_init (& (i->w_timer), libev_timer_cb,
-		 *                0.000001f*e->data.time, 0);
-		 *
-		 * so i have replaced it.
-		 */
-
-		ev_init (& (i->w_timer), libev_timer_cb);
-
-		i->w_timer.at = 0.000001f * e->data.time;
-		i->w_timer.repeat = 0;
-
+		ev_timer_init (& (i->w_timer), libev_timer_cb,
+		               0.000001f*e->data.time, 0);
 		ev_timer_start (loop, & (i->w_timer) );
 		break;
 
