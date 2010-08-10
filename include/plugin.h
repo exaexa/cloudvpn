@@ -22,10 +22,11 @@
 #include "packet.h"
 #include "pool.h"
 #include "sched.h"
+#include "mutex.h"
 
 struct plugin {
 	char name[9]; /* zero terminated string */
-	int instances; /* number of instances of the script */
+	cl_sem refcount; /* number of instances of the plugin */
 
 	void (*process_work) (struct part*, struct work*);
 	void (*init) (struct part*);

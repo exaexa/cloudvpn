@@ -10,14 +10,15 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CVPN_CHAIN_H
-#define _CVPN_CHAIN_H
+#ifndef _CVPN_POOL_H
+#define _CVPN_POOL_H
 
 #include <stdint.h>
 
 struct part;
 
 #include "plugin.h"
+#include "mutex.h"
 
 /*
  * part is an instance of plugin
@@ -29,14 +30,10 @@ struct part {
 	struct plugin*p;
 	void*data;
 	char name[9]; /* canonical name for human usage */
-
-	/* TODO
-	 * invent some mechanism that ensures that parts are deleted safely.
-	 * refcounting?
-	 */
+	cl_sem refcount;
 };
 
-struct part* cloudvpn_part_by_name (char*);
+struct part* cloudvpn_find_part_by_name (char*);
 
 struct part* cloudvpn_part_init (struct plugin*);
 int cloudvpn_part_close (struct part*);

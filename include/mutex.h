@@ -14,13 +14,13 @@
 #define _CVPN_MUTEX_H
 
 /*
- * wrapper around mutual exclusion implementation. If you want to supply any
- * other (more native) please feed it into mutex.c or so. Also including
- * conditions and waiting for them.
+ * wrapper around mutual exclusion stuff. If you want to supply any other (more
+ * native) implementations, please feed them to mutex.c or so.
  */
 
 typedef void* cl_mutex;
 typedef void* cl_cond;
+typedef void* cl_sem;
 
 int cl_mutex_init (cl_mutex*);
 int cl_mutex_destroy (cl_mutex);
@@ -33,6 +33,12 @@ int cl_cond_destroy (cl_cond);
 int cl_cond_wait (cl_cond, cl_mutex);
 int cl_cond_signal (cl_cond);
 int cl_cond_broadcast (cl_cond);
+
+int cl_sem_init (cl_sem*, unsigned int value);
+int cl_sem_destroy (cl_sem);
+int cl_sem_post (cl_sem);
+int cl_sem_get (cl_sem);
+int cl_sem_value (cl_sem);
 
 
 #endif
