@@ -26,16 +26,22 @@ struct part;
  */
 
 struct part {
-	uint32_t id;
 	struct plugin*p;
 	void*data;
 	char name[9]; /* canonical name for human usage */
 	cl_sem refcount;
 };
 
+/* human usage in the config files */
 struct part* cloudvpn_find_part_by_name (char*);
 
+/* instantiating from plugins */
 struct part* cloudvpn_part_init (struct plugin*);
-int cloudvpn_part_close (struct part*);
+
+/* using a part by reference */
+struct part* cloudvpn_part_acquire (struct part*);
+
+/* stopping part usage ("undo" any of above 3 functions) */
+void cloudvpn_part_close (struct part*);
 
 #endif
