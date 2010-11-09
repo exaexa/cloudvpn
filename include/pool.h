@@ -33,10 +33,10 @@ struct part {
 };
 
 /* human usage in the config files */
-struct part* cloudvpn_find_part_by_name (char*);
+struct part* cloudvpn_find_part_by_name (const char*);
 
 /* instantiating from plugins */
-struct part* cloudvpn_part_init (struct plugin*);
+struct part* cloudvpn_part_init (struct plugin*, const char*name);
 
 /* using a part by reference */
 struct part* cloudvpn_part_acquire (struct part*);
