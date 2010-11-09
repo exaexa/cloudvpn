@@ -25,22 +25,33 @@ struct part* cloudvpn_part_init (struct plugin* plug, const char*name) {
 	struct part*p = cl_malloc (sizeof (struct part) );
 	if (!p) return 0;
 
-	p->p = plug;
-	cl_sem_post(plug->refcount);
+	cl_sem_post (plug->refcount);
 
+	p->p = plug;
 	p->data = 0;
 
-	if (name) { /* copy the name */
-		for (i = 0;name[i] && (i < 8);++i) p->name[i] = name[i];
-		p->name[i] = 0;
-	}
+	if cl_sem_init (p->refcount, 1) /* got one ref from this right? */
+		goto dealloc_error;
 
-	cl_sem_init (p->refcount, 1); /* got one ref from this right? */
+	if (name) { /* copy the name */
+		for (i = 0;name[i];++i);
+		p->name = cl_malloc (i + 1);
+		if (!p->name) goto dealloc_error;
+		p->name[i] = 0;
+		for (i = i - 1;i >= 0;--i) p->name[i] = name[i];
+	} else p->name = 0;
 
 	/* call the constructor */
 	if (p->p->init) p->p->init (p);
 
 	return p;
+
+dealloc_error:
+
+	cl_sem_get (plug->refcount);
+	cl_free (p);
+
+	return 0;
 }
 
 struct part* cloudvpn_part_acquire (struct part*p) {
@@ -56,7 +67,7 @@ static void cloudvpn_part_destroy (struct part*p)
 	/* call the destructor */
 	if (p->p->fini) p->p->fini (p);
 
-	cl_sem_get(p->p->refcount);
+	cl_sem_get (p->p->refcount);
 
 	cl_sem_destroy (p->refcount);
 	cl_free (p);

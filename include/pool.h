@@ -28,7 +28,7 @@ struct part;
 struct part {
 	struct plugin*p;
 	void*data;
-	char name[9]; /* canonical name for human usage */
+	const char*name;
 	cl_sem refcount;
 };
 
