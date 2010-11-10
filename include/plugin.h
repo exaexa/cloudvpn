@@ -34,7 +34,7 @@ struct plugin {
 };
 
 struct plugin* cloudvpn_find_plugin_by_name (const char*);
-void cloudvpn_open_plugin (const char*);
+struct plugin* cloudvpn_open_plugin (const char* /*filename*/ );
 void cloudvpn_close_plugin (struct plugin*);
 
 #endif

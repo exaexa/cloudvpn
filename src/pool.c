@@ -1,10 +1,25 @@
 
+/*
+ * CloudVPN
+ *
+ * This program is a free software: You can redistribute and/or modify it
+ * under the terms of GNU GPLv3 license, or any later version of the license.
+ * The program is distributed in a good hope it will be useful, but without
+ * any warranty - see the aforementioned license for more details.
+ * You should have received a copy of the license along with this program;
+ * if not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* TODO mutex part list functions */
+
 #include "pool.h"
 #include "alloc.h"
 
 /*
  * stuff for remembering active parts, esp. for finding them by name
  */
+
+
 
 struct part_list {
 	struct part* p;
@@ -24,6 +39,7 @@ static int part_add (struct part*p)
 
 	pl->p = p;
 	pl->next = parts;
+
 	parts = pl;
 
 	return 0;
@@ -59,6 +75,8 @@ struct part* cloudvpn_find_part_by_name (const char*name) {
 	int i;
 	struct part_list*pl;
 	for (pl = parts;pl;pl = pl->next) {
+
+		if (!pl->p->name) continue;
 		for (i = 0;name[i] && (pl->p->name[i]) &&
 		        (name[i] == pl->p->name[i]);
 		        ++i);
