@@ -25,7 +25,7 @@
 #include "mutex.h"
 
 struct plugin {
-	char name[9]; /* zero terminated string */
+	const char*name;
 	cl_sem refcount; /* number of instances of the plugin */
 
 	void (*process_work) (struct part*, struct work*);
@@ -33,8 +33,9 @@ struct plugin {
 	void (*fini) (struct part*);
 };
 
-void cloudvpn_load_plugin (const char*fn, const char*name);
-void cloudvpn_close_plugin (const char*name);
+struct plugin* cloudvpn_find_plugin_by_name (const char*);
+void cloudvpn_open_plugin (const char*);
+void cloudvpn_close_plugin (struct plugin*);
 
 #endif
 

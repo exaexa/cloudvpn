@@ -10,11 +10,9 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define __CVPN_PLUGIN_MAIN
 #include "api.h"
 
-struct plugin* cloudvpn_plugin_get (int id) {
+struct plugin* cloudvpn_plugin_get () {
 	return 0;
 }
-
 
