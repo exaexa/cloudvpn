@@ -10,8 +10,6 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* TODO mutex plugin list operation */
-
 #include "plugin.h"
 #include "alloc.h"
 
@@ -23,6 +21,7 @@ struct plugin_list {
 };
 
 static struct plugin_list* plugins;
+static cl_mutex plugins_mutex;
 
 static int plugin_add (struct plugin*p, void*dl_handle)
 {
@@ -33,11 +32,15 @@ static int plugin_add (struct plugin*p, void*dl_handle)
 	struct plugin_list* pl = cl_malloc (sizeof (struct plugin_list) );
 	if (!pl) return 1;
 
+	cl_mutex_lock (plugins_mutex);
+
 	pl->p = p;
 	pl->next = plugins;
 	pl->dlopen_handle = dl_handle;
 
 	plugins = pl;
+
+	cl_mutex_unlock (plugins_mutex);
 
 	return 0;
 }
@@ -48,22 +51,28 @@ static int plugin_safe_remove (struct plugin*p)
 	 * remove from linked list
 	 */
 
-	struct plugin_list**pl = &plugins;
+	struct plugin_list**pl;
 	struct plugin_list* t;
 
 	if (cl_sem_value (p->refcount) )
 		return 1;
+
+	cl_mutex_lock (plugins_mutex);
+
+	pl = &plugins;
 
 	while (*pl) {
 		if ( (*pl)->p == p) {
 			t = *pl;
 			*pl = (*pl)->next;
 			cl_free (t);
+			cl_mutex_unlock (plugins_mutex);
 			return 0;
 		} else
 			pl = & ( (*pl)->next);
 	}
 
+	cl_mutex_unlock (plugins_mutex);
 	return 1;
 }
 
@@ -72,8 +81,10 @@ static struct plugin_list* find_pl_by_plugin (struct plugin*p) {
 
 	struct plugin_list*pl;
 
-	for (pl = plugins;pl;pl = pl->next) if (pl->p == p) return pl;
-	return 0;
+	cl_mutex_lock (plugins_mutex);
+	for (pl = plugins;pl;pl = pl->next) if (pl->p == p) break;
+	cl_mutex_unlock (plugins_mutex);
+	return pl;
 }
 
 static struct plugin_list* find_pl_by_name (const char* name) {
@@ -81,14 +92,19 @@ static struct plugin_list* find_pl_by_name (const char* name) {
 	int i;
 	struct plugin_list*pl;
 
+	cl_mutex_lock (plugins_mutex);
 	for (pl = plugins;pl;pl = pl->next) {
 
 		if (!pl->p->name) continue;
 		for (i = 0;name[i] && (pl->p->name[i]) &&
 		        (name[i] == pl->p->name[i]);
 		        ++i);
-		if ( (name[i] == 0) && (pl->p->name[i] == 0) ) return pl;
+		if ( (name[i] == 0) && (pl->p->name[i] == 0) ) {
+			cl_mutex_unlock (plugins_mutex);
+			return pl;
+		}
 	}
+	cl_mutex_unlock (plugins_mutex);
 	return 0;
 }
 
@@ -159,4 +175,19 @@ int cloudvpn_close_plugin (struct plugin*p)
 	dlclose (dl);
 
 	return 0;
+}
+
+
+/*
+ * init/deinit
+ */
+
+int cloudvpn_init_plugins()
+{
+	return cl_mutex_init (&plugins_mutex);
+}
+
+void cloudvpn_finish_plugins()
+{
+	cl_mutex_destroy (plugins_mutex);
 }

@@ -44,4 +44,7 @@ struct part* cloudvpn_part_acquire (struct part*);
 /* stopping part usage ("undo" any of above 3 functions) */
 void cloudvpn_part_close (struct part*);
 
+int cloudvpn_init_pool();
+void cloudvpn_finish_pool();
+
 #endif

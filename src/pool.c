@@ -27,6 +27,7 @@ struct part_list {
 };
 
 static struct part_list* parts;
+static cl_mutex parts_mutex;
 
 static int part_add (struct part*p)
 {
@@ -37,10 +38,12 @@ static int part_add (struct part*p)
 	struct part_list* pl = cl_malloc (sizeof (struct part_list) );
 	if (!pl) return 1;
 
+	cl_mutex_lock (parts_mutex);
 	pl->p = p;
 	pl->next = parts;
 
 	parts = pl;
+	cl_mutex_unlock (parts_mutex);
 
 	return 0;
 }
@@ -51,19 +54,25 @@ static int part_remove (struct part*p)
 	 * remove from linked list
 	 */
 
-	struct part_list**pl = &parts;
+	struct part_list**pl;
 	struct part_list* t;
+
+	cl_mutex_lock (parts_mutex);
+
+	pl = &parts;
 
 	while (*pl) {
 		if ( (*pl)->p == p) {
 			t = *pl;
 			*pl = (*pl)->next;
 			cl_free (t);
+			cl_mutex_unlock (parts_mutex);
 			return 0;
 		} else
 			pl = & ( (*pl)->next);
 	}
 
+	cl_mutex_unlock (parts_mutex);
 	return 1;
 }
 
@@ -74,14 +83,19 @@ struct part* cloudvpn_find_part_by_name (const char*name) {
 
 	int i;
 	struct part_list*pl;
+	cl_mutex_lock (parts_mutex);
 	for (pl = parts;pl;pl = pl->next) {
 
 		if (!pl->p->name) continue;
 		for (i = 0;name[i] && (pl->p->name[i]) &&
 		        (name[i] == pl->p->name[i]);
 		        ++i);
-		if ( (name[i] == 0) && (pl->p->name[i] == 0) ) return pl->p;
+		if ( (name[i] == 0) && (pl->p->name[i] == 0) ) {
+			cl_mutex_unlock (parts_mutex);
+			return pl->p;
+		}
 	}
+	cl_mutex_unlock (parts_mutex);
 	return 0;
 }
 
@@ -170,4 +184,18 @@ void cloudvpn_part_close (struct part*p)
 
 	if (cl_sem_value (p->refcount) )
 		cloudvpn_part_destroy (p);
+}
+
+/*
+ * init/deinit
+ */
+
+int cloudvpn_init_pool()
+{
+	return cl_mutex_init (&parts_mutex);
+}
+
+void cloudvpn_finish_pool()
+{
+	cl_mutex_destroy (parts_mutex);
 }
