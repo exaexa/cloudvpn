@@ -128,7 +128,7 @@ int cloudvpn_event_init()
 	ev_async_init (&async, null_async_callback);
 	ev_async_start (loop, &async);
 
-	return loop
+	return (!loop)
 	       || cl_mutex_init (&eventcore_mutex)
 	       || cl_mutex_init (&ecq_mutex);
 }
