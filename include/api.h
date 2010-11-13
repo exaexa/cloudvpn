@@ -17,10 +17,19 @@
  * Every plugin must export these functions.
  */
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "plugin.h"
 
-int cloudvpn_plugin_init();
-int cloudvpn_plugin_fini();
-struct plugin*cloudvpn_plugin_get ();
+	int cloudvpn_plugin_init();
+	void cloudvpn_plugin_fini();
+	struct plugin*cloudvpn_plugin_get ();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
