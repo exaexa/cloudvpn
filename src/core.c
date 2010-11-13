@@ -19,11 +19,15 @@ int cloudvpn_core_init()
 {
 	if (cloudvpn_event_init() ) return 1;
 	if (cloudvpn_scheduler_init() ) return 2;
+	if (cloudvpn_init_plugins() ) return 3;
+	if (cloudvpn_init_pool() ) return 4;
 	return 0;
 }
 
 int cloudvpn_core_finish()
 {
+	cloudvpn_finish_pool();
+	cloudvpn_finish_plugins();
 	if (cloudvpn_scheduler_destroy() ) return 2;
 	if (cloudvpn_event_finish() ) return 1;
 	return 0;
