@@ -6,6 +6,8 @@ AC_CONFIG_AUX_DIR(.) # because of libtoolize
 AM_INIT_AUTOMAKE()
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES])
 
+AM_DISABLE_STATIC    # we only build .so plugins
+
 AM_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_INSTALL
