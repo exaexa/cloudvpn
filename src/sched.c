@@ -115,12 +115,15 @@ static void do_work (struct work* w)
 	case work_event:
 		break;
 
+	case work_part_cleanup:
+		break;
+
+	case work_command:
+		break;
+
 	case work_poll:
 		cloudvpn_wait_for_event();
 		cloudvpn_schedule_event_poll();
-		break;
-
-	case work_exit:
 		break;
 	}
 }

@@ -35,7 +35,7 @@ struct packet {
 
 	uint32_t mark;
 
-	struct part *src_part, *route_part, *dst_part;
+	struct part *src_part, *next_part, *dst_part;
 };
 
 struct packet* cloudvpn_packet_alloc();

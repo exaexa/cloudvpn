@@ -13,8 +13,6 @@
 #ifndef _CVPN_POOL_H
 #define _CVPN_POOL_H
 
-#include <stdint.h>
-
 struct part;
 
 #include "plugin.h"

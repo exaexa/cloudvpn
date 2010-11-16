@@ -32,7 +32,8 @@ enum {
 	work_packet, /* part processes a packet */
 	work_event, /* part is woken up by an event */
 	work_poll, /* wait for events */
-	work_exit /* remove a part */
+	work_part_cleanup, /* broadcast about a part being removed */
+	work_command /* configuration command/statement (in packet) */
 };
 
 #include "packet.h"
@@ -49,6 +50,7 @@ struct work {
 	union {
 		struct packet* p; /* packet to process */
 		struct event_data e;
+		struct part* pt; /* part to cleanup */
 	};
 };
 
