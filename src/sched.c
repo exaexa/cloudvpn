@@ -108,6 +108,7 @@ void cloudvpn_schedule_event_poll()
 
 static void do_work (struct work* w)
 {
+	/* TODO fill this with functionality */
 	switch (w->type) {
 	case work_packet:
 		break;
@@ -116,6 +117,9 @@ static void do_work (struct work* w)
 		break;
 
 	case work_part_cleanup:
+		break;
+
+	case work_plugin_cleanup:
 		break;
 
 	case work_command:

@@ -29,10 +29,11 @@ int cloudvpn_schedule_work (struct work*);
 void cloudvpn_schedule_event_poll();
 
 enum {
-	work_packet, /* part processes a packet */
+	work_packet, /* part processes a data packet */
 	work_event, /* part is woken up by an event */
 	work_poll, /* wait for events */
 	work_part_cleanup, /* broadcast about a part being removed */
+	work_plugin_cleanup, /* same for plugin */
 	work_command /* configuration command/statement (in packet) */
 };
 
@@ -51,6 +52,7 @@ struct work {
 		struct packet* p; /* packet to process */
 		struct event_data e;
 		struct part* pt; /* part to cleanup */
+		struct plugin* pl; /* plugin to cleanup */
 	};
 };
 
