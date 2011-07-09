@@ -10,8 +10,6 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-/* TODO mutex part list functions */
-
 #include "pool.h"
 #include "alloc.h"
 
